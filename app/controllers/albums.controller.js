@@ -1,15 +1,16 @@
 const albums = require('../models/albums.model.js');
+const { createQuery, filterArr } = require('../helpers/helpers');
 
-// Create and Save a new artist
+// Create and Save a new albums
 exports.create = (req, res) => {
     // Validate request
     if (!req.body.content) {
         return res.status(400).send({
-            message: "artist content can not be empty"
+            message: "albums content can not be empty"
         });
     }
 
-    // Create a artist
+    // Create a albums
     const albums = new albums({
         title: req.body.title || "Untitled albums",
         content: req.body.content,
@@ -46,9 +47,65 @@ exports.findAll = (req, res) => {
         });
 };
 
-// Find a single albums with a artistId
+// Find by albums by an artist  with a artistId
 exports.findOne = (req, res) => {
-    albums.findById(req.params.artistId)
+    const query = albums.find(); // `query` is an instance of `Query`
+    query.setOptions({ lean: true });
+    query.collection(albums.collection);
+    query.where({ 'Sid': req.params.id })
+        .then(albums => {
+            if (!albums) {
+                return res.status(404).send({
+                    message: "albums not found with id " + req.params.id
+                });
+            }
+            res.send(albums);
+        }).catch(err => {
+            if (err.kind === 'ObjectId') {
+                return res.status(404).send({
+                    message: "albums not found with id " + req.params.id
+                });
+            }
+            return res.status(500).send({
+                message: "Error retrieving albums with id " + req.params.id
+            });
+        });
+};
+
+// Find albums by a single artists
+exports.findName = (req, res) => {
+    console.log(req.params.name)
+    const query = albums.find(); // `query` is an instance of `Query`
+    query.setOptions({ lean: true });
+    query.collection(albums.collection);
+    query.where({ 'Name': req.params.name })
+        .then(albums => {
+            if (!albums) {
+                return res.status(404).send({
+                    message: "albums not found with name: " + req.params.name
+                });
+            }
+            res.send(albums);
+        }).catch(err => {
+            if (err.kind === 'ObjectId') {
+                return res.status(404).send({
+                    message: "albums not found with name: " + req.params.name
+                });
+            }
+            return res.status(500).send({
+                message: "Error retrieving albums with name: " + req.params.name
+            });
+        });
+};
+
+// Find all albums by an artist that match a string
+exports.findMatch = (req, res) => {
+    console.log(req.params.name)
+    const query = albums.find(); // `query` is an instance of `Query`
+    query.setOptions({ lean: true });
+    query.collection(albums.collection);
+    var regex = new RegExp(req.params.name, 'i');
+    query.where({ 'Name': regex })
         .then(albums => {
             if (!albums) {
                 return res.status(404).send({
@@ -64,6 +121,86 @@ exports.findOne = (req, res) => {
             }
             return res.status(500).send({
                 message: "Error retrieving albums with id " + req.params.artistId
+            });
+        });
+};
+
+// Find all albums by an artist that match all parameters
+// TODO: pull specific albums from the album array as one of the params so in other words be able to search by album title
+exports.findMultipleParams = (req, res) => {
+    const conj = req.params.params.split('~')[0];
+    const params = req.params.params.split('~')[1].split('_');
+    const arr = createQuery(params)
+    const query = albums.find(); // `query` is an instance of `Query`
+
+
+    query.setOptions({ lean: true });
+    query.collection(albums.collection);
+    query[conj](arr)
+        .then(albums => {
+            if (!albums) {
+                return res.status(404).send({
+                    message: "albums not found with id " + req.params.params
+                });
+            }
+            const str = req.params.params.split('~')[1] || req.params.params
+            const params = str.split('_');
+            const albumParams = params.filter(param => {
+                return param.indexOf('.') > -1;
+            });
+
+            let albumsArr = albums[0].albums;
+
+            for(var x = 0; x < albumParams.length; x++) {
+                const param = albumParams[x];
+                const splitter = param.split(':');
+                const key = splitter[0].split('.')[1] || splitter[0];
+                const val = splitter[1];
+                albumsArr = filterArr(albumsArr, key, val);
+            }
+            albums[0].albums = albumsArr;
+            res.send(albums[0]);
+        }).catch(err => {
+            if (err.kind === 'ObjectId') {
+                return res.status(404).send({
+                    message: "albums not found with id " + req.params.params
+                });
+            }
+            return res.status(500).send({
+                message: "Error retrieving albums with id " + req.params.params
+            });
+        });
+};
+
+
+// Find albums by artists from lat and lng
+exports.findLatLng = (req, res) => {
+    const params = req.params.params
+    const latLngArr = params.split('_');
+    const lowerLat = parseFloat(latLngArr[0]) - .05;
+    const upperLat = parseFloat(latLngArr[0]) + .05
+    const lowerLng = parseFloat(latLngArr[1]) - .05;
+    const upperLng = parseFloat(latLngArr[1]) + .05;
+
+    const query = albums.find(); // `query` is an instance of `Query`
+    query.setOptions({ lean: true });
+    query.collection(albums.collection);
+    query.and([{ 'Lat': { $gte: lowerLat } }, { 'Lat': { $lte: upperLat } }, { 'Lng': { $gte: lowerLng } }, { 'Lng': { $lte: upperLng } }])
+        .then(albums => {
+            if (!albums) {
+                return res.status(404).send({
+                    message: "albums not found with id " + req.params.params
+                });
+            }
+            res.send(albums);
+        }).catch(err => {
+            if (err.kind === 'ObjectId') {
+                return res.status(404).send({
+                    message: "albums not found with id " + req.params.params
+                });
+            }
+            return res.status(500).send({
+                message: "Error retrieving albums with id " + req.params.params
             });
         });
 };
@@ -121,3 +258,4 @@ exports.delete = (req, res) => {
             });
         });
 };
+

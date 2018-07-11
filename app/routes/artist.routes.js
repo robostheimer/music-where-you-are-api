@@ -8,7 +8,7 @@ module.exports = (app) => {
     app.get('/artists', artists.findAll);
 
     // Retrieve a single artist with artistId
-    app.get('/artists/:artistId', artists.findOne);
+    app.get('/artists/:id', artists.findOne);
 
     // Retrieve artists with name
     app.get('/artistsName/:name', artists.findName);
@@ -17,7 +17,7 @@ module.exports = (app) => {
     app.get('/artistsMatch/:name', artists.findMatch);
 
     // Retrieve all records that matches all parameters
-    app.get('/artistMultiple/:params', artists.findMultipleParams);
+    app.get('/artistsMultiple/:params', artists.findMultipleParams);
 
     // Retrieve all records that matches all parameters
     app.get('/artistsLatLng/:params', artists.findLatLng);
