@@ -122,8 +122,8 @@ exports.findMatch = (req, res) => {
         });
 };
 
-// Find all artist that match all parameters
-// for genres: http://localhost:3000/artistsMultiple/or~spotify.genres:indie%20folk_spotify.genres:hip%20hop
+// TODO figure out how to have some and params and some or params. See mongoose docs (perhaps use IN)
+// ex. artists from seattle && (genres match hip hop or genres match folk )
 exports.findMultipleParams = (req, res) => {
     const conj = req.params.params.split('~')[0];
     const params = req.params.params.split('~')[1].split('_');

@@ -122,8 +122,6 @@ exports.findMatch = (req, res) => {
         });
 };
 
-// Find all topTracks by an artist that match all parameters
-// TODO: pull specific topTracks from the album array as one of the params so in other words be able to search by album title
 exports.findMultipleParams = (req, res) => {
     const conj = req.params.params.split('~')[0];
     const params = req.params.params.split('~')[1].split('_');
