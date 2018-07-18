@@ -1,5 +1,5 @@
 const topTracks = require('../models/topTracks.model.js');
-const { createQuery, filterArr } = require('../helpers/helpers');
+const { createAggregateQuery, filterArr } = require('../helpers/helpers');
 
 // Create and Save a new artist
 exports.create = (req, res) => {
@@ -123,49 +123,45 @@ exports.findMatch = (req, res) => {
 };
 
 exports.findMultipleParams = (req, res) => {
-    const conj = req.params.params.split('~')[0];
-    const params = req.params.params.split('~')[1].split('_');
-    const arr = createQuery(params)
-    const query = topTracks.find(); // `query` is an instance of `Query`
+    const aggregate = createAggregateQuery(req.params.params)
 
-
-    query.setOptions({ lean: true });
-    query.collection(topTracks.collection);
-    query[conj](arr)
-        .then(topTracks => {
-            if (!topTracks) {
-                return res.status(404).send({
-                    message: "topTracks not found with id " + req.params.params
-                });
-            }
-            const str = req.params.params.split('~')[1] || req.params.params
-            const params = str.split('_');
-            const topTracksParams = params.filter(param => {
-                return param.indexOf('.') > -1;
+    topTracks.aggregate([{
+        $match: aggregate
+    }])
+    .then(topTracks => {
+        if (!topTracks) {
+            return res.status(404).send({
+                message: "topTracks not found with id " + req.params.params
             });
-
-            let topTracksArr = topTracks[0].topTracks;
-            
-            for (var x = 0; x < topTracksParams.length; x++) {
-                const param = topTracksParams[x];
-                const splitter = param.split(':');
-                const key = splitter[0].split('.')[1] || splitter[0];
-                const val = splitter[1];
-                topTracksArr = filterArr(topTracksArr, key, val);
-            }
-            topTracks[0].topTracks = topTracksArr;
-
-            res.send(topTracks[0]);
-        }).catch(err => {
-            if (err.kind === 'ObjectId') {
-                return res.status(404).send({
-                    message: "topTracks not found with id " + req.params.params
-                });
-            }
-            return res.status(500).send({
-                message: "Error retrieving topTracks with id " + req.params.params
-            });
+        }
+        const str = req.params.params.split('~')[1] || req.params.params
+        const params = str.split('_');
+        const topTracksParams = params.filter(param => {
+            return param.indexOf('.') > -1;
         });
+
+        let topTracksArr = topTracks[0].topTracks;
+        
+        for (var x = 0; x < topTracksParams.length; x++) {
+            const param = topTracksParams[x];
+            const splitter = param.split(':');
+            const key = splitter[0].split('.')[1] || splitter[0];
+            const val = splitter[1];
+            topTracksArr = filterArr(topTracksArr, key, val);
+        }
+        topTracks[0].topTracks = topTracksArr;
+
+        res.send(topTracks[0]);
+    }).catch(err => {
+        if (err.kind === 'ObjectId') {
+            return res.status(404).send({
+                message: "topTracks not found with id " + req.params.params
+            });
+        }
+        return res.status(500).send({
+            message: "Error retrieving topTracks with id " + req.params.params
+        });
+    });
 };
 
 // Find topTracks by artists from lat and lng

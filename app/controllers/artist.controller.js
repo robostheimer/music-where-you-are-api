@@ -1,5 +1,5 @@
 const artist = require('../models/artist.model.js');
-const { createQuery } = require('../helpers/helpers');
+const { createAggregateQuery } = require('../helpers/helpers');
 
 // Create and Save a new artist
 exports.create = (req, res) => {
@@ -124,16 +124,14 @@ exports.findMatch = (req, res) => {
 
 // TODO figure out how to have some and params and some or params. See mongoose docs (perhaps use IN)
 // ex. artists from seattle && (genres match hip hop or genres match folk )
+// need to use aggregate queries so a request looks like: 
+// http://localhost:3000/artistsMultiple/and~City:Seattle,%20WA(or~spotify.genres:indie%20folk_spotify.genres:rock)
 exports.findMultipleParams = (req, res) => {
-    const conj = req.params.params.split('~')[0];
-    const params = req.params.params.split('~')[1].split('_');
-    const arr = createQuery(params)
-    const query = artist.find(); // `query` is an instance of `Query`
+    const aggregate = createAggregateQuery(req.params.params)
     
-
-    query.setOptions({ lean: true });
-    query.collection(artist.collection);
-    query[conj](arr)
+    artist.aggregate([{
+        $match: aggregate
+    }])
         .then(artist => {
             if (!artist) {
                 return res.status(404).send({

@@ -1,5 +1,5 @@
 const albums = require('../models/albums.model.js');
-const { createQuery, filterArr } = require('../helpers/helpers');
+const { createAggregateQuery, filterArr } = require('../helpers/helpers');
 
 // Create and Save a new albums
 exports.create = (req, res) => {
@@ -125,51 +125,45 @@ exports.findMatch = (req, res) => {
         });
 };
 
-// Find all albums by an artist that match all parameters
-// TODO: pull specific albums from the album array as one of the params so in other words be able to search by album title
 exports.findMultipleParams = (req, res) => {
-    const conj = req.params.params.split('~')[0];
-    const params = req.params.params.split('~')[1].split('_');
-    const arr = createQuery(params)
-    const query = albums.find(); // `query` is an instance of `Query`
+    const aggregate = createAggregateQuery(req.params.params)
 
-
-    query.setOptions({ lean: true });
-    query.collection(albums.collection);
-    query[conj](arr)
-        .then(albums => {
-            if (!albums) {
-                return res.status(404).send({
-                    message: "albums not found with id " + req.params.params
-                });
-            }
-            const str = req.params.params.split('~')[1] || req.params.params
-            const params = str.split('_');
-            const albumParams = params.filter(param => {
-                return param.indexOf('.') > -1;
+    albums.aggregate([{
+        $match: aggregate
+    }])
+    .then(albums => {
+        if (!albums) {
+            return res.status(404).send({
+                message: "albums not found with id " + req.params.params
             });
-
-            let albumsArr = albums[0].albums;
-
-            for(var x = 0; x < albumParams.length; x++) {
-                const param = albumParams[x];
-                const splitter = param.split(':');
-                const key = splitter[0].split('.')[1] || splitter[0];
-                const val = splitter[1];
-                albumsArr = filterArr(albumsArr, key, val);
-            }
-            albums[0].albums = albumsArr;
-            res.send(albums[0]);
-        }).catch(err => {
-            if (err.kind === 'ObjectId') {
-                return res.status(404).send({
-                    message: "albums not found with id " + req.params.params
-                });
-            }
-            return res.status(500).send({
-                message: "Error retrieving albums with id " + req.params.params
-            });
+        }
+        const str = req.params.params.split('~')[1] || req.params.params
+        const params = str.split('_');
+        const albumParams = params.filter(param => {
+            return param.indexOf('.') > -1;
         });
+
+        let albumsArr = albums[0].albums;
+
+        for(var x = 0; x < albumParams.length; x++) {
+            const param = albumParams[x];
+            const splitter = param.split(':');
+            const key = splitter[0].split('.')[1] || splitter[0];
+            const val = splitter[1];
+            albumsArr = filterArr(albumsArr, key, val);
+        }
+        albums[0].albums = albumsArr;
+        res.send(albums[0]);
+    }).catch(err => {
+        if (err.kind === 'ObjectId') {
+            return res.status(404).send({
+                message: "albums not found with id " + req.params.params
+            });
+        }
+        return res.status(500).send({
+            message: "Error retrieving albums with id " + req.params.params
+        });
+    });
 };
 
 
