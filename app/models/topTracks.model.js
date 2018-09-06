@@ -1,6 +1,7 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const TopTracksSchema = mongoose.Schema({
+const TopTracksSchema = mongoose.Schema(
+  {
     ArtistId: String,
     Hotness: String,
     Name: String,
@@ -8,10 +9,16 @@ const TopTracksSchema = mongoose.Schema({
     City: String,
     Lat: Number,
     Lng: Number,
-    topTracks: Object,
+    genres: Array,
+    topTracks: Object
+  },
+  {
+    timestamps: true
+  }
+);
 
-}, {
-        timestamps: true
-    });
-
-module.exports = mongoose.model('TopTracks', TopTracksSchema, 'TopTracks');
+module.exports = mongoose.model(
+  "TopTracks.LimitedInfo.WithGenres",
+  TopTracksSchema,
+  "TopTracks.LimitedInfo.WithGenres"
+);

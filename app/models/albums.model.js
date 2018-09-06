@@ -1,6 +1,7 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const AlbumsSchema = mongoose.Schema({
+const AlbumsSchema = mongoose.Schema(
+  {
     ArtistId: String,
     Hotness: String,
     Name: String,
@@ -8,10 +9,11 @@ const AlbumsSchema = mongoose.Schema({
     City: String,
     Lat: Number,
     Lng: Number,
-    albums: Object,
+    albums: Object
+  },
+  {
+    timestamps: true
+  }
+);
 
-}, {
-        timestamps: true
-    });
-
-module.exports = mongoose.model('Albums', AlbumsSchema, 'Albums');
+module.exports = mongoose.model("Albums", AlbumsSchema, "Albums");

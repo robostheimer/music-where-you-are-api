@@ -1,6 +1,7 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const RelatedSchema = mongoose.Schema({
+const RelatedSchema = mongoose.Schema(
+  {
     ArtistId: String,
     Hotness: String,
     Name: String,
@@ -8,10 +9,11 @@ const RelatedSchema = mongoose.Schema({
     City: String,
     Lat: Number,
     Lng: Number,
-    related: Object,
+    related: Object
+  },
+  {
+    timestamps: true
+  }
+);
 
-}, {
-        timestamps: true
-    });
-
-module.exports = mongoose.model('Related', RelatedSchema, 'Related');
+module.exports = mongoose.model("Related", RelatedSchema, "Related");

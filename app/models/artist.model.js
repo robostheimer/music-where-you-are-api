@@ -1,6 +1,7 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const ArtistSchema = mongoose.Schema({
+const ArtistSchema = mongoose.Schema(
+  {
     ArtistId: String,
     Hotness: String,
     Name: String,
@@ -8,10 +9,11 @@ const ArtistSchema = mongoose.Schema({
     City: String,
     Lat: Number,
     Lng: Number,
-    spotify: Object,
+    spotify: Object
+  },
+  {
+    timestamps: true
+  }
+);
 
-}, {
-        timestamps: true
-    });
-
-module.exports = mongoose.model('Artist', ArtistSchema, 'ArtistInfo');
+module.exports = mongoose.model("Artist", ArtistSchema, "ArtistInfo");
