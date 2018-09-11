@@ -36,8 +36,7 @@ require("./app/routes/albums.routes.js")(app);
 // define a simple route
 app.get("/", (req, res) => {
   res.json({
-    message:
-      "Welcome to EasyNotes application. Take notes quickly. Organize and keep track of all your notes."
+    message: "MusicWhereYouAre endpoints.  Is there music where you are?"
   });
 });
 
