@@ -35,6 +35,12 @@ require("./app/routes/albums.routes.js")(app);
 
 // define a simple route
 app.get("/", (req, res) => {
+  response.writeHead(200, {
+    "Content-Length": res.length,
+    "Content-Type": "application/json; charset=UTF-8",
+    "Cache-Control": "public, max-age=60, must-revalidate, no-transform",
+    "Access-Control-Allow-Credentials": true
+  });
   res.json({
     message: "MusicWhereYouAre endpoints.  Is there music where you are?"
   });
