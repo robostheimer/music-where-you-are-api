@@ -58,7 +58,7 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const query = topTracks.find(); // `query` is an instance of `Query`
   query.setOptions({ lean: true });
-  query.collection(topTracks.LimitedInfo.WithGenres.collection);
+  query.collection(topTracks.collection);
   query
     .where({ Sid: req.params.id })
     .then(topTracks => {
@@ -84,7 +84,7 @@ exports.findOne = (req, res) => {
 exports.findName = (req, res) => {
   const query = topTracks.find(); // `query` is an instance of `Query`
   query.setOptions({ lean: true });
-  query.collection(topTracks.LimitedInfo.WithGenres.collection);
+  query.collection(topTracks.collection);
   query
     .where({ Name: req.params.name })
     .then(topTracks => {
@@ -111,7 +111,7 @@ exports.findName = (req, res) => {
 exports.findMatch = (req, res) => {
   const query = topTracks.find(); // `query` is an instance of `Query`
   query.setOptions({ lean: true });
-  query.collection(topTracks.LimitedInfo.WithGenres.collection);
+  query.collection(topTracks.collection);
   var regex = new RegExp(req.params.name, "i");
   query
     .where({ Name: regex })
@@ -192,7 +192,7 @@ exports.findLatLng = (req, res) => {
 
   const query = topTracks.find(); // `query` is an instance of `Query`
   query.setOptions({ lean: true });
-  query.collection(topTracks.LimitedInfo.WithGenres.collection);
+  query.collection(topTracks.collection);
 
   query
     .and([
