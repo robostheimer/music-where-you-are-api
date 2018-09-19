@@ -38,8 +38,8 @@ exports.createAggregateQuery = reqParams => {
   if (reqParams.indexOf("Lng") > -1) {
     const regexLng = exports.getLng(reqParams);
     const lngStr = regexLng.split(":")[1];
-    const lowerLng = parseFloat(lngStr) - 0.05;
-    const upperLng = parseFloat(lngStr) + 0.05;
+    const lowerLng = parseFloat(lngStr) - 0.3;
+    const upperLng = parseFloat(lngStr) + 0.3;
     var lngGT = { Lng: { $gte: lowerLng } };
     var lngLT = { Lng: { $lte: upperLng } };
     reqParams = reqParams.replace(regexLng.replace(/_/g, ""), "");
