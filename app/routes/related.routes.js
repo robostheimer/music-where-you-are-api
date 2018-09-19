@@ -1,6 +1,17 @@
 module.exports = app => {
   const related = require("../controllers/related.controller.js");
 
+  app.get("/*", (req, res, next) => {
+    res.setHeader("Content-Type", "application/json; charset=UTF-8");
+    res.setHeader(
+      "Cache-Control",
+      "public, max-age=60, must-revalidate, no-transform"
+    );
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    next();
+  });
+
   // Create a new related artists
   app.post("/related", related.create);
 

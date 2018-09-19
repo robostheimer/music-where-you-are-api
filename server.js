@@ -33,14 +33,20 @@ require("./app/routes/topTracks.routes.js")(app);
 require("./app/routes/related.routes.js")(app);
 require("./app/routes/albums.routes.js")(app);
 
+// sets headers
+app.get("/*", (req, res, next) => {
+  res.setHeader("Content-Type", "application/json; charset=UTF-8");
+  res.setHeader(
+    "Cache-Control",
+    "public, max-age=60, must-revalidate, no-transform"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  next();
+});
+
 // define a simple route
-app.get("/", (req, res) => {
-  response.writeHead(200, {
-    "Content-Length": res.length,
-    "Content-Type": "application/json; charset=UTF-8",
-    "Cache-Control": "public, max-age=60, must-revalidate, no-transform",
-    "Access-Control-Allow-Credentials": true
-  });
+app.get("/*", (req, res) => {
   res.json({
     message: "MusicWhereYouAre endpoints.  Is there music where you are?"
   });
