@@ -23,23 +23,23 @@ exports.createQuery = arr => {
 };
 
 exports.createAggregateQuery = reqParams => {
+  let params = [];
   if (reqParams.indexOf("Lat") > -1) {
     const regexLat = exports.getLat(reqParams);
     const latStr = regexLat.split(":")[1];
-    const lowerLat = parseFloat(latStr) - 0.05;
-    const upperLat = parseFloat(latStr) + 0.05;
+    const lowerLat = parseFloat(latStr) - 0.25;
+    const upperLat = parseFloat(latStr) + 0.25;
     var latGT = { Lat: { $gte: lowerLat } };
     var latLT = { Lat: { $lte: upperLat } };
-    reqParams = reqParams
-      .replace(regexLat.replace(/_/g, ""), "")
-      .replace(/_/g, "");
+    reqParams = reqParams.replace(regexLat.replace(/_/g, ""), "");
+    //.replace(/_/g, "");
   }
 
   if (reqParams.indexOf("Lng") > -1) {
     const regexLng = exports.getLng(reqParams);
     const lngStr = regexLng.split(":")[1];
-    const lowerLng = parseFloat(lngStr) - 0.3;
-    const upperLng = parseFloat(lngStr) + 0.3;
+    const lowerLng = parseFloat(lngStr) - 0.1;
+    const upperLng = parseFloat(lngStr) + 0.1;
     var lngGT = { Lng: { $gte: lowerLng } };
     var lngLT = { Lng: { $lte: upperLng } };
     reqParams = reqParams.replace(regexLng.replace(/_/g, ""), "");
@@ -54,7 +54,6 @@ exports.createAggregateQuery = reqParams => {
   let finalParams = {};
   let innerParamsFinal = {};
 
-  console.log(reqParams);
   const innerParams = innerConj
     ? exports.arrayToObj(
         reqParams
@@ -63,7 +62,7 @@ exports.createAggregateQuery = reqParams => {
           .split("_")
       )
     : "";
-  let params = innerConj
+  let paramsArr = innerConj
     ? exports.arrayToObj(
         reqParams
           .split("~")[1]
@@ -71,7 +70,16 @@ exports.createAggregateQuery = reqParams => {
           .split("_")
       )
     : exports.arrayToObj(reqParams.split("~")[1].split("_"));
-  params = params.map(item => exports.removeValue(item, ""));
+  // need to fix empy values being added here
+  paramsArr.forEach(item => {
+    newObj = {};
+    for (p in item) {
+      if (p !== "") {
+        newObj[p] = item[p];
+        params.push(newObj);
+      }
+    }
+  });
 
   conj = `$${conj}`;
   if (latGT) {
@@ -90,7 +98,6 @@ exports.createAggregateQuery = reqParams => {
   }
 
   finalParams[conj] = params;
-
   return finalParams;
 };
 
