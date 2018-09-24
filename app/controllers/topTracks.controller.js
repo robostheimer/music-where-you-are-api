@@ -137,12 +137,17 @@ exports.findMatch = (req, res) => {
 
 exports.findMultipleParams = (req, res) => {
   const aggregate = createAggregateQuery(req.params.params);
+  const limit = parseInt(req.query.limit) || 100;
+  const skip = parseInt(req.query.skip) || 0;
 
   topTracks
     .aggregate([
       {
         $match: aggregate
-      }
+      },
+      { $limit: limit },
+      { $sort: { "topTracks.popularity": -1 } },
+      { $skip: skip }
     ])
     .then(topTracks => {
       if (!topTracks) {
@@ -150,10 +155,20 @@ exports.findMultipleParams = (req, res) => {
           message: "topTracks not found with id " + req.params.params
         });
       }
+
+      //res.send(topTracks);
       const str = req.params.params.split("~")[1] || req.params.params;
       const params = str.split("_");
       const topTracksParams = params.filter(param => {
-        return param.indexOf(".") > -1;
+        return (
+          param.indexOf(".") > -1 &&
+          /Name/.test(param) &&
+          /Lat/.test(param) &&
+          /Lng/.test(param) &&
+          /Sid/.test(param) &&
+          /City/.test(param) &&
+          /genres/.test(param)
+        );
       });
 
       let topTracksArr = topTracks[0].topTracks;
@@ -163,11 +178,12 @@ exports.findMultipleParams = (req, res) => {
         const splitter = param.split(":");
         const key = splitter[0].split(".")[1] || splitter[0];
         const val = splitter[1];
+
         topTracksArr = filterArr(topTracksArr, key, val);
       }
-      topTracks[0].topTracks = topTracksArr;
+      topTracks = topTracksParams.length > 1 ? topTracksArr : topTracks;
 
-      res.send(topTracks[0]);
+      res.send(topTracks);
     })
     .catch(err => {
       if (err.kind === "ObjectId") {

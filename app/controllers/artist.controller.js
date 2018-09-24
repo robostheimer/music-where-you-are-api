@@ -138,12 +138,16 @@ exports.findMatch = (req, res) => {
 // http://localhost:3000/artistsMultiple/and~City:Seattle,%20WA(or~spotify.genres:indie%20folk_spotify.genres:rock)
 exports.findMultipleParams = (req, res) => {
   const aggregate = createAggregateQuery(req.params.params);
-
+  const limit = parseInt(req.query.limit) || 100;
+  const skip = parseInt(req.query.skip) || 0;
   artist
     .aggregate([
       {
         $match: aggregate
-      }
+      },
+      { $limit: limit },
+      { $sort: { "spotify.followers.total": -1 } },
+      { $skip: skip }
     ])
     .then(artist => {
       if (!artist) {

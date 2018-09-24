@@ -137,12 +137,17 @@ exports.findMatch = (req, res) => {
 // TODO: pull specific related from the related array as one of the params so in other words be able to search by related title
 exports.findMultipleParams = (req, res) => {
   const aggregate = createAggregateQuery(req.params.params);
+  const limit = parseInt(req.query.limit) || 100;
+  const skip = parseInt(req.query.skip) || 0;
 
   related
     .aggregate([
       {
         $match: aggregate
-      }
+      },
+      { $limit: limit },
+      { $sort: { "related.followers.total": -1 } },
+      { $skip: skip }
     ])
     .then(related => {
       if (!related) {
@@ -153,7 +158,15 @@ exports.findMultipleParams = (req, res) => {
       const str = req.params.params.split("~")[1] || req.params.params;
       const params = str.split("_");
       const relatedParams = params.filter(param => {
-        return param.indexOf(".") > -1;
+        return (
+          param.indexOf(".") > -1 &&
+          /Name/.test(param) &&
+          /Lat/.test(param) &&
+          /Lng/.test(param) &&
+          /Sid/.test(param) &&
+          /City/.test(param) &&
+          /genres/.test(param)
+        );
       });
 
       let relatedArr = related[0].related;
@@ -165,8 +178,8 @@ exports.findMultipleParams = (req, res) => {
         relatedArr = filterArr(relatedArr, key, val);
       }
       related[0].related = relatedArr;
-
-      res.send(related[0]);
+      related = relatedParams.length > 1 ? relatedArr : related;
+      res.send(related);
     })
     .catch(err => {
       if (err.kind === "ObjectId") {

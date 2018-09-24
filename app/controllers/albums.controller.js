@@ -137,12 +137,16 @@ exports.findMatch = (req, res) => {
 
 exports.findMultipleParams = (req, res) => {
   const aggregate = createAggregateQuery(req.params.params);
+  const limit = parseInt(req.query.limit) || 100;
+  const skip = parseInt(req.query.skip) || 0;
 
   albums
     .aggregate([
       {
         $match: aggregate
-      }
+      },
+      { $limit: limit },
+      { $skip: skip }
     ])
     .then(albums => {
       if (!albums) {
