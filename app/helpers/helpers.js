@@ -27,8 +27,8 @@ exports.createAggregateQuery = reqParams => {
   if (reqParams.indexOf("Lat") > -1) {
     const regexLat = exports.getLat(reqParams);
     const latStr = regexLat.split(":")[1];
-    const lowerLat = parseFloat(latStr) - 0.25;
-    const upperLat = parseFloat(latStr) + 0.25;
+    const lowerLat = parseFloat(latStr) - 0.75;
+    const upperLat = parseFloat(latStr) + 0.75;
     var latGT = { Lat: { $gte: lowerLat } };
     var latLT = { Lat: { $lte: upperLat } };
     reqParams = reqParams.replace(regexLat.replace(/_/g, ""), "");

@@ -32,6 +32,9 @@ require("./app/routes/artist.routes.js")(app);
 require("./app/routes/topTracks.routes.js")(app);
 require("./app/routes/related.routes.js")(app);
 require("./app/routes/albums.routes.js")(app);
+require("./app/routes/geolocation.routes.js")(app);
+require("./app/routes/location.routes.js")(app);
+require("./app/routes/spotify.artists.routes.js")(app);
 
 // sets headers
 app.get("/*", (req, res, next) => {
