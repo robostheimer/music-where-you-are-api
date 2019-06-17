@@ -53,6 +53,7 @@ exports.findAll = (req, res) => {
 
 // Find a single artist by Name
 exports.findOne = (req, res) => {
+  console.log(req.params.id);
   const query = artist.find(); // `query` is an instance of `Query`
   query.setOptions({ lean: true });
   query.collection(artist.collection);

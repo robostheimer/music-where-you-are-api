@@ -136,6 +136,7 @@ exports.findMatch = (req, res) => {
 };
 
 exports.findMultipleParams = (req, res) => {
+  console.log(req.params.params);
   const aggregate = createAggregateQuery(req.params.params);
   const limit = parseInt(req.query.limit) || 100;
   const skip = parseInt(req.query.skip) || 0;
