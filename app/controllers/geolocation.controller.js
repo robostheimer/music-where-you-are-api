@@ -131,21 +131,19 @@ exports.findMatch = (req, res) => {
 };
 
 exports.findMultipleParams = (req, res) => {
+  console.log(req.params.params);
   const aggregate = createAggregateQuery(req.params.params);
   const limit = parseInt(req.query.limit) || 100;
   const skip = parseInt(req.query.skip) || 0;
+  console.log(aggregate);
 
   geolocation
     .aggregate([
       {
         $match: aggregate
-      },
-      { $limit: limit },
-      { $sort: { "geolocation.popularity": -1 } },
-      { $skip: skip }
+      }
     ])
     .then(geolocation => {
-      console.log(geolocation);
       if (!geolocation) {
         return res.status(404).send({
           message: "geolocation not found with id " + req.params.params
@@ -160,13 +158,12 @@ exports.findMultipleParams = (req, res) => {
           param.indexOf(".") > -1 &&
           /Name/.test(param) &&
           /Lat/.test(param) &&
-          /Lng/.test(param) &&
+          /Long/.test(param) &&
           /Sid/.test(param) &&
           /City/.test(param) &&
           /genres/.test(param)
         );
       });
-
       let geolocationArr = geolocation[0].geolocation;
 
       for (var x = 0; x < geolocationParams.length; x++) {
@@ -201,18 +198,35 @@ exports.findLatLng = (req, res) => {
   const upperLat = parseFloat(latLngArr[0]) + 0.05;
   const lowerLng = parseFloat(latLngArr[1]) - 0.05;
   const upperLng = parseFloat(latLngArr[1]) + 0.05;
+  // const query = geolocation.find(); // `query` is an instance of `Query`
+  // query.setOptions({ lean: true });
+  // query.collection(geolocation.collection);
 
-  const query = geolocation.find(); // `query` is an instance of `Query`
-  query.setOptions({ lean: true });
-  query.collection(geolocation.collection);
-
-  query
-    .and([
-      { Lat: { $gte: lowerLat } },
-      { Lat: { $lte: upperLat } },
-      { Lng: { $gte: lowerLng } },
-      { Lng: { $lte: upperLng } }
+  geolocation
+    .aggregate([
+      {
+        $match: {
+          $and: [
+            {
+              Lat: {
+                $gte: 42
+              }
+            },
+            {
+              Lat: {
+                $lte: 50
+              }
+            },
+            {
+              Lng: {
+                $lte: 100
+              }
+            }
+          ]
+        }
+      }
     ])
+
     .then(geolocation => {
       if (!geolocation) {
         return res.status(404).send({

@@ -6,7 +6,7 @@ exports.create = (req, res) => {
   // Validate request
   if (!req.body.content) {
     return res.status(400).send({
-      message: "spotifyArtists content can not be empty"
+      message: "spotifyArtists content can not be empty",
     });
   }
 
@@ -21,20 +21,20 @@ exports.create = (req, res) => {
     name: req.body.name,
     popularity: req.body.popularity,
     type: req.body.type,
-    uri: req.body.uri
+    uri: req.body.uri,
   });
 
   // Save spotifyArtists in the database
   spotifyArtists
     .save()
-    .then(data => {
+    .then((data) => {
       res.send(data);
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
         message:
           err.message ||
-          "Some error occurred while creating the spotifyArtists."
+          "Some error occurred while creating the spotifyArtists.",
       });
     });
 };
@@ -45,18 +45,15 @@ exports.findAll = (req, res) => {
   const skip = parseInt(req.query.skip) || 0;
   console.log(skip);
   spotifyArtists
-    .aggregate([
-      { $limit: limit },
-      { $sort: { "followers.total": -1 } },
-      { $skip: skip }
-    ])
-    .then(spotifyArtistss => {
+    .aggregate([{ $sort: { "followers.total": -1 } }, { $skip: skip }])
+    .then((spotifyArtistss) => {
       res.send(spotifyArtistss);
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving spotifyArtistss."
+          err.message ||
+          "Some error occurred while retrieving spotifyArtistss.",
       });
     });
 };
@@ -68,22 +65,22 @@ exports.findOne = (req, res) => {
   query.collection(spotifyArtists.collection);
   query
     .where({ Sid: req.params.id })
-    .then(spotifyArtists => {
+    .then((spotifyArtists) => {
       if (!spotifyArtists) {
         return res.status(404).send({
-          message: "spotifyArtists not found with id " + req.params.id
+          message: "spotifyArtists not found with id " + req.params.id,
         });
       }
       res.send(spotifyArtists);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "spotifyArtists not found with id " + req.params.id
+          message: "spotifyArtists not found with id " + req.params.id,
         });
       }
       return res.status(500).send({
-        message: "Error retrieving spotifyArtists with id " + req.params.id
+        message: "Error retrieving spotifyArtists with id " + req.params.id,
       });
     });
 };
@@ -94,27 +91,27 @@ exports.findName = (req, res) => {
   query.collection(spotifyArtists.collection);
   query
     .where({ name: req.params.name })
-    .then(spotifyArtists => {
+    .then((spotifyArtists) => {
       console.log(spotifyArtists);
       if (!spotifyArtists) {
         return res.status(404).send({
           message:
-            "spotifyArtists not found with id " + req.params.spotifyArtistsId
+            "spotifyArtists not found with id " + req.params.spotifyArtistsId,
         });
       }
       res.send(spotifyArtists);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
           message:
-            "spotifyArtists not found with id " + req.params.spotifyArtistsId
+            "spotifyArtists not found with id " + req.params.spotifyArtistsId,
         });
       }
       return res.status(500).send({
         message:
           "Error retrieving spotifyArtists with id " +
-          req.params.spotifyArtistsId
+          req.params.spotifyArtistsId,
       });
     });
 };
@@ -127,26 +124,26 @@ exports.findMatch = (req, res) => {
   var regex = new RegExp(req.params.name, "i");
   query
     .where({ name: regex })
-    .then(spotifyArtists => {
+    .then((spotifyArtists) => {
       if (!spotifyArtists) {
         return res.status(404).send({
           message:
-            "spotifyArtists not found with id " + req.params.spotifyArtistsId
+            "spotifyArtists not found with id " + req.params.spotifyArtistsId,
         });
       }
       res.send(spotifyArtists);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
           message:
-            "spotifyArtists not found with id " + req.params.spotifyArtistsId
+            "spotifyArtists not found with id " + req.params.spotifyArtistsId,
         });
       }
       return res.status(500).send({
         message:
           "Error retrieving spotifyArtists with id " +
-          req.params.spotifyArtistsId
+          req.params.spotifyArtistsId,
       });
     });
 };
@@ -164,28 +161,29 @@ exports.findMultipleParams = (req, res) => {
   spotifyArtists
     .aggregate([
       {
-        $match: aggregate
+        $match: aggregate,
       },
-      { $limit: limit },
+
       { $sort: { "spotify.followers.total": -1 } },
-      { $skip: skip }
+      { $skip: skip },
     ])
-    .then(spotifyArtists => {
+    .limit(limit)
+    .then((spotifyArtists) => {
       if (!spotifyArtists) {
         return res.status(404).send({
-          message: "spotifyArtists not found with id " + req.params.params
+          message: "spotifyArtists not found with id " + req.params.params,
         });
       }
       res.send(spotifyArtists);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "spotifyArtists not found with id " + req.params.params
+          message: "spotifyArtists not found with id " + req.params.params,
         });
       }
       return res.status(500).send({
-        message: "Error retrieving spotifyArtists with id " + req.params.params
+        message: "Error retrieving spotifyArtists with id " + req.params.params,
       });
     });
 };
@@ -207,24 +205,24 @@ exports.findLatLng = (req, res) => {
       { Lat: { $gte: lowerLat } },
       { Lat: { $lte: upperLat } },
       { Lng: { $gte: lowerLng } },
-      { Lng: { $lte: upperLng } }
+      { Lng: { $lte: upperLng } },
     ])
-    .then(spotifyArtists => {
+    .then((spotifyArtists) => {
       if (!spotifyArtists) {
         return res.status(404).send({
-          message: "spotifyArtists not found with id " + req.params.params
+          message: "spotifyArtists not found with id " + req.params.params,
         });
       }
       res.send(spotifyArtists);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "spotifyArtists not found with id " + req.params.params
+          message: "spotifyArtists not found with id " + req.params.params,
         });
       }
       return res.status(500).send({
-        message: "Error retrieving spotifyArtists with id " + req.params.params
+        message: "Error retrieving spotifyArtists with id " + req.params.params,
       });
     });
 };
@@ -234,7 +232,7 @@ exports.update = (req, res) => {
   // Validate Request
   if (!req.body.content) {
     return res.status(400).send({
-      message: "spotifyArtists content can not be empty"
+      message: "spotifyArtists content can not be empty",
     });
   }
 
@@ -244,29 +242,30 @@ exports.update = (req, res) => {
       req.params.spotifyArtistsId,
       {
         title: req.body.title || "Untitled spotifyArtists",
-        content: req.body.content
+        content: req.body.content,
       },
       { new: true }
     )
-    .then(spotifyArtists => {
+    .then((spotifyArtists) => {
       if (!spotifyArtists) {
         return res.status(404).send({
           message:
-            "spotifyArtists not found with id " + req.params.spotifyArtistsId
+            "spotifyArtists not found with id " + req.params.spotifyArtistsId,
         });
       }
       res.send(spotifyArtists);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
           message:
-            "spotifyArtists not found with id " + req.params.spotifyArtistsId
+            "spotifyArtists not found with id " + req.params.spotifyArtistsId,
         });
       }
       return res.status(500).send({
         message:
-          "Error updating spotifyArtists with id " + req.params.spotifyArtistsId
+          "Error updating spotifyArtists with id " +
+          req.params.spotifyArtistsId,
       });
     });
 };
@@ -275,26 +274,26 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   spotifyArtists
     .findByIdAndRemove(req.params.spotifyArtistsId)
-    .then(spotifyArtists => {
+    .then((spotifyArtists) => {
       if (!spotifyArtists) {
         return res.status(404).send({
           message:
-            "spotifyArtists not found with id " + req.params.spotifyArtistsId
+            "spotifyArtists not found with id " + req.params.spotifyArtistsId,
         });
       }
       res.send({ message: "spotifyArtists deleted successfully!" });
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
         return res.status(404).send({
           message:
-            "spotifyArtists not found with id " + req.params.spotifyArtistsId
+            "spotifyArtists not found with id " + req.params.spotifyArtistsId,
         });
       }
       return res.status(500).send({
         message:
           "Could not delete spotifyArtists with id " +
-          req.params.spotifyArtistsId
+          req.params.spotifyArtistsId,
       });
     });
 };

@@ -6,7 +6,7 @@ exports.create = (req, res) => {
   // Validate request
   if (!req.body.content) {
     return res.status(400).send({
-      message: "artist content can not be empty"
+      message: "artist content can not be empty",
     });
   }
 
@@ -22,19 +22,19 @@ exports.create = (req, res) => {
     Lat: req.body.Lat,
     Lng: req.body.Lng,
     genres: [],
-    spotify: req.body.spotify | {}
+    spotify: req.body.spotify | {},
   });
 
   // Save topTracks in the database
   topTracks
     .save()
-    .then(data => {
+    .then((data) => {
       res.send(data);
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while creating the topTracks."
+          err.message || "Some error occurred while creating the topTracks.",
       });
     });
 };
@@ -43,13 +43,13 @@ exports.create = (req, res) => {
 exports.findAll = (req, res) => {
   topTracks
     .find()
-    .then(topTracks => {
+    .then((topTracks) => {
       res.send(topTracks);
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving topTracks."
+          err.message || "Some error occurred while retrieving topTracks.",
       });
     });
 };
@@ -61,22 +61,22 @@ exports.findOne = (req, res) => {
   query.collection(topTracks.collection);
   query
     .where({ Sid: req.params.id })
-    .then(topTracks => {
+    .then((topTracks) => {
       if (!topTracks) {
         return res.status(404).send({
-          message: "topTracks not found with id " + req.params.artistId
+          message: "topTracks not found with id " + req.params.artistId,
         });
       }
       res.send(topTracks);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "topTracks not found with id " + req.params.artistId
+          message: "topTracks not found with id " + req.params.artistId,
         });
       }
       return res.status(500).send({
-        message: "Error retrieving topTracks with id " + req.params.artistId
+        message: "Error retrieving topTracks with id " + req.params.artistId,
       });
     });
 };
@@ -87,22 +87,22 @@ exports.findName = (req, res) => {
   query.collection(topTracks.collection);
   query
     .where({ Name: req.params.name })
-    .then(topTracks => {
+    .then((topTracks) => {
       if (!topTracks) {
         return res.status(404).send({
-          message: "topTracks not found with id " + req.params.artistId
+          message: "topTracks not found with id " + req.params.artistId,
         });
       }
       res.send(topTracks);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "topTracks not found with id " + req.params.artistId
+          message: "topTracks not found with id " + req.params.artistId,
         });
       }
       return res.status(500).send({
-        message: "Error retrieving topTracks with id " + req.params.artistId
+        message: "Error retrieving topTracks with id " + req.params.artistId,
       });
     });
 };
@@ -115,22 +115,22 @@ exports.findMatch = (req, res) => {
   var regex = new RegExp(req.params.name, "i");
   query
     .where({ Name: regex })
-    .then(topTracks => {
+    .then((topTracks) => {
       if (!topTracks) {
         return res.status(404).send({
-          message: "topTracks not found with id " + req.params.artistId
+          message: "topTracks not found with id " + req.params.artistId,
         });
       }
       res.send(topTracks);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "topTracks not found with id " + req.params.artistId
+          message: "topTracks not found with id " + req.params.artistId,
         });
       }
       return res.status(500).send({
-        message: "Error retrieving topTracks with id " + req.params.artistId
+        message: "Error retrieving topTracks with id " + req.params.artistId,
       });
     });
 };
@@ -140,27 +140,29 @@ exports.findMultipleParams = (req, res) => {
   const aggregate = createAggregateQuery(req.params.params);
   const limit = parseInt(req.query.limit) || 100;
   const skip = parseInt(req.query.skip) || 0;
+  const sort = { "topTracks.popularity": -1 };
 
   topTracks
     .aggregate([
       {
-        $match: aggregate
+        $match: aggregate,
       },
-      { $limit: limit },
+
       { $sort: { "topTracks.popularity": -1 } },
-      { $skip: skip }
+      { $skip: skip },
     ])
-    .then(topTracks => {
+    .limit(limit)
+    .then((topTracks) => {
       if (!topTracks) {
         return res.status(404).send({
-          message: "topTracks not found with id " + req.params.params
+          message: "topTracks not found with id " + req.params.params,
         });
       }
 
       //res.send(topTracks);
       const str = req.params.params.split("~")[1] || req.params.params;
       const params = str.split("_");
-      const topTracksParams = params.filter(param => {
+      const topTracksParams = params.filter((param) => {
         return (
           param.indexOf(".") > -1 &&
           /Name/.test(param) &&
@@ -186,14 +188,14 @@ exports.findMultipleParams = (req, res) => {
 
       res.send(topTracks);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "topTracks not found with id " + req.params.params
+          message: "topTracks not found with id " + req.params.params,
         });
       }
       return res.status(500).send({
-        message: "Error retrieving topTracks with id " + req.params.params
+        message: "Error retrieving topTracks with id " + req.params.params,
       });
     });
 };
@@ -216,24 +218,24 @@ exports.findLatLng = (req, res) => {
       { Lat: { $gte: lowerLat } },
       { Lat: { $lte: upperLat } },
       { Lng: { $gte: lowerLng } },
-      { Lng: { $lte: upperLng } }
+      { Lng: { $lte: upperLng } },
     ])
-    .then(topTracks => {
+    .then((topTracks) => {
       if (!topTracks) {
         return res.status(404).send({
-          message: "topTracks not found with id " + req.params.params
+          message: "topTracks not found with id " + req.params.params,
         });
       }
       res.send(topTracks);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "topTracks not found with id " + req.params.params
+          message: "topTracks not found with id " + req.params.params,
         });
       }
       return res.status(500).send({
-        message: "Error retrieving topTracks with id " + req.params.params
+        message: "Error retrieving topTracks with id " + req.params.params,
       });
     });
 };
@@ -243,7 +245,7 @@ exports.update = (req, res) => {
   // Validate Request
   if (!req.body.content) {
     return res.status(400).send({
-      message: "topTracks content can not be empty"
+      message: "topTracks content can not be empty",
     });
   }
 
@@ -253,26 +255,26 @@ exports.update = (req, res) => {
       req.params.artistId,
       {
         title: req.body.title || "Untitled topTracks",
-        content: req.body.content
+        content: req.body.content,
       },
       { new: true }
     )
-    .then(topTracks => {
+    .then((topTracks) => {
       if (!topTracks) {
         return res.status(404).send({
-          message: "topTracks not found with id " + req.params.artistId
+          message: "topTracks not found with id " + req.params.artistId,
         });
       }
       res.send(topTracks);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "topTracks not found with id " + req.params.artistId
+          message: "topTracks not found with id " + req.params.artistId,
         });
       }
       return res.status(500).send({
-        message: "Error updating topTracks with id " + req.params.artistId
+        message: "Error updating topTracks with id " + req.params.artistId,
       });
     });
 };
@@ -281,22 +283,22 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   topTracks
     .findByIdAndRemove(req.params.artistId)
-    .then(topTracks => {
+    .then((topTracks) => {
       if (!topTracks) {
         return res.status(404).send({
-          message: "topTracks not found with id " + req.params.artistId
+          message: "topTracks not found with id " + req.params.artistId,
         });
       }
       res.send({ message: "topTracks deleted successfully!" });
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
         return res.status(404).send({
-          message: "topTracks not found with id " + req.params.artistId
+          message: "topTracks not found with id " + req.params.artistId,
         });
       }
       return res.status(500).send({
-        message: "Could not delete topTracks with id " + req.params.artistId
+        message: "Could not delete topTracks with id " + req.params.artistId,
       });
     });
 };

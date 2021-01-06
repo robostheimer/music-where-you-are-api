@@ -9,10 +9,10 @@ const ArtistSchema = mongoose.Schema(
     City: String,
     Lat: Number,
     Lng: Number,
-    spotify: Object
+    spotify: Object,
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 

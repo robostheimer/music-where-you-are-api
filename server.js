@@ -1,5 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+var https = require("https");
+var PORT = process.env.PORT || 3000;
+var HOST = process.env.HOST || "";
+var fs = require("fs");
 
 // create express app
 const app = express();
@@ -56,6 +60,19 @@ app.get("/*", (req, res) => {
 });
 
 // listen for requests
-app.listen(3000, () => {
-  console.log("Server is listening on port 3000");
+// app.listen(3000, () => {
+//   console.log("Server is listening on port 3000");
+// });
+
+var options = {
+  key: fs.readFileSync("ssl/server.key"),
+  cert: fs.readFileSync("ssl/server.crt")
+};
+
+https.createServer(options, app).listen(PORT, HOST, null, function() {
+  console.log(
+    "Server listening on port %d in %s mode",
+    this.address().port,
+    app.settings.env
+  );
 });

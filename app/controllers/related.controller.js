@@ -6,14 +6,12 @@ exports.create = (req, res) => {
   // Validate request
   if (!req.body.content) {
     return res.status(400).send({
-      message: "artist content can not be empty"
+      message: "artist content can not be empty",
     });
   }
 
   // Create a artist
   const related = new related({
-    title: req.body.title || "Untitled related",
-    content: req.body.content,
     ArtistId: req.body.ArtistId,
     Hotness: req.body.Hotness,
     Name: req.body.Name,
@@ -21,19 +19,19 @@ exports.create = (req, res) => {
     City: req.body.City,
     Lat: req.body.Lat,
     Lng: req.body.Lng,
-    spotify: req.body.spotify | {}
+    related: req.body.related | {},
   });
 
   // Save related in the database
   related
     .save()
-    .then(data => {
+    .then((data) => {
       res.send(data);
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while creating the related."
+          err.message || "Some error occurred while creating the related.",
       });
     });
 };
@@ -42,12 +40,12 @@ exports.create = (req, res) => {
 exports.findAll = (req, res) => {
   related
     .find()
-    .then(related => {
+    .then((related) => {
       res.send(related);
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
-        message: err.message || "Some error occurred while retrieving related."
+        message: err.message || "Some error occurred while retrieving related.",
       });
     });
 };
@@ -57,24 +55,26 @@ exports.findOne = (req, res) => {
   const query = related.find(); // `query` is an instance of `Query`
   query.setOptions({ lean: true });
   query.collection(related.collection);
+  console.log(req.params.id);
   query
     .where({ Sid: req.params.id })
-    .then(related => {
+    .then((related) => {
+      console.log(related);
       if (!related) {
         return res.status(404).send({
-          message: "related not found with id " + req.params.artistId
+          message: "related not found with id " + req.params.artistId,
         });
       }
       res.send(related);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "related not found with id " + req.params.artistId
+          message: "related not found with id " + req.params.artistId,
         });
       }
       return res.status(500).send({
-        message: "Error retrieving related with id " + req.params.artistId
+        message: "Error retrieving related with id " + req.params.artistId,
       });
     });
 };
@@ -85,22 +85,22 @@ exports.findName = (req, res) => {
   query.collection(related.collection);
   query
     .where({ Name: req.params.name })
-    .then(related => {
+    .then((related) => {
       if (!related) {
         return res.status(404).send({
-          message: "related not found with id " + req.params.artistId
+          message: "related not found with id " + req.params.artistId,
         });
       }
       res.send(related);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "related not found with id " + req.params.artistId
+          message: "related not found with id " + req.params.artistId,
         });
       }
       return res.status(500).send({
-        message: "Error retrieving related with id " + req.params.artistId
+        message: "Error retrieving related with id " + req.params.artistId,
       });
     });
 };
@@ -113,22 +113,22 @@ exports.findMatch = (req, res) => {
   var regex = new RegExp(req.params.name, "i");
   query
     .where({ Name: regex })
-    .then(related => {
+    .then((related) => {
       if (!related) {
         return res.status(404).send({
-          message: "related not found with id " + req.params.artistId
+          message: "related not found with id " + req.params.artistId,
         });
       }
       res.send(related);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "related not found with id " + req.params.artistId
+          message: "related not found with id " + req.params.artistId,
         });
       }
       return res.status(500).send({
-        message: "Error retrieving related with id " + req.params.artistId
+        message: "Error retrieving related with id " + req.params.artistId,
       });
     });
 };
@@ -143,21 +143,22 @@ exports.findMultipleParams = (req, res) => {
   related
     .aggregate([
       {
-        $match: aggregate
+        $match: aggregate,
       },
-      { $limit: limit },
+
       { $sort: { "related.followers.total": -1 } },
-      { $skip: skip }
+      { $skip: skip },
     ])
-    .then(related => {
+    .limit(limit)
+    .then((related) => {
       if (!related) {
         return res.status(404).send({
-          message: "related not found with id " + req.params.params
+          message: "related not found with id " + req.params.params,
         });
       }
       const str = req.params.params.split("~")[1] || req.params.params;
       const params = str.split("_");
-      const relatedParams = params.filter(param => {
+      const relatedParams = params.filter((param) => {
         return (
           param.indexOf(".") > -1 &&
           /Name/.test(param) &&
@@ -181,14 +182,14 @@ exports.findMultipleParams = (req, res) => {
       related = relatedParams.length > 1 ? relatedArr : related;
       res.send(related);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "related not found with id " + req.params.params
+          message: "related not found with id " + req.params.params,
         });
       }
       return res.status(500).send({
-        message: "Error retrieving related with id " + req.params.params
+        message: "Error retrieving related with id " + req.params.params,
       });
     });
 };
@@ -210,24 +211,24 @@ exports.findLatLng = (req, res) => {
       { Lat: { $gte: lowerLat } },
       { Lat: { $lte: upperLat } },
       { Lng: { $gte: lowerLng } },
-      { Lng: { $lte: upperLng } }
+      { Lng: { $lte: upperLng } },
     ])
-    .then(related => {
+    .then((related) => {
       if (!related) {
         return res.status(404).send({
-          message: "related not found with id " + req.params.params
+          message: "related not found with id " + req.params.params,
         });
       }
       res.send(related);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "related not found with id " + req.params.params
+          message: "related not found with id " + req.params.params,
         });
       }
       return res.status(500).send({
-        message: "Error retrieving related with id " + req.params.params
+        message: "Error retrieving related with id " + req.params.params,
       });
     });
 };
@@ -237,7 +238,7 @@ exports.update = (req, res) => {
   // Validate Request
   if (!req.body.content) {
     return res.status(400).send({
-      message: "related content can not be empty"
+      message: "related content can not be empty",
     });
   }
 
@@ -247,26 +248,26 @@ exports.update = (req, res) => {
       req.params.artistId,
       {
         title: req.body.title || "Untitled related",
-        content: req.body.content
+        content: req.body.content,
       },
       { new: true }
     )
-    .then(related => {
+    .then((related) => {
       if (!related) {
         return res.status(404).send({
-          message: "related not found with id " + req.params.artistId
+          message: "related not found with id " + req.params.artistId,
         });
       }
       res.send(related);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "related not found with id " + req.params.artistId
+          message: "related not found with id " + req.params.artistId,
         });
       }
       return res.status(500).send({
-        message: "Error updating related with id " + req.params.artistId
+        message: "Error updating related with id " + req.params.artistId,
       });
     });
 };
@@ -275,22 +276,22 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   related
     .findByIdAndRemove(req.params.artistId)
-    .then(related => {
+    .then((related) => {
       if (!related) {
         return res.status(404).send({
-          message: "related not found with id " + req.params.artistId
+          message: "related not found with id " + req.params.artistId,
         });
       }
       res.send({ message: "related deleted successfully!" });
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
         return res.status(404).send({
-          message: "related not found with id " + req.params.artistId
+          message: "related not found with id " + req.params.artistId,
         });
       }
       return res.status(500).send({
-        message: "Could not delete related with id " + req.params.artistId
+        message: "Could not delete related with id " + req.params.artistId,
       });
     });
 };

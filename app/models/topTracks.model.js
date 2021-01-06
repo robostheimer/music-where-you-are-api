@@ -10,10 +10,10 @@ const TopTracksSchema = mongoose.Schema(
     Lat: Number,
     Lng: Number,
     genres: Array,
-    topTracks: Object
+    topTracks: Object,
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 

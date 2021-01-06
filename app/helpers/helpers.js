@@ -1,7 +1,7 @@
-exports.createQuery = arr => {
+exports.createQuery = (arr) => {
   // add sorting capability (by popularity)
   const params = [];
-  arr.forEach(param => {
+  arr.forEach((param) => {
     const hasLat = param.indexOf("Lat") > -1;
     const hasLng = param.indexOf("Lng") > -1;
     if (hasLat || hasLng) {
@@ -22,23 +22,22 @@ exports.createQuery = arr => {
   return params;
 };
 
-exports.createAggregateQuery = reqParams => {
-  console.log(reqParams);
+exports.createAggregateQuery = (reqParams) => {
   const splitParams = reqParams.split("_");
   const shouldRegEx = splitParams.indexOf("noRegEx") === -1;
   let newParams = splitParams
-    .filter(item => {
+    .filter((item) => {
       return item.indexOf("noRegEx") === -1;
     })
     .join("_");
   console.log(newParams);
-  console.log(shouldRegEx);
+
   let params = [];
   if (newParams.indexOf("Lat") > -1) {
     const regexLat = exports.getLat(newParams);
     const latStr = regexLat.split(":")[1];
-    const lowerLat = parseFloat(latStr) - 0.225;
-    const upperLat = parseFloat(latStr) + 0.5;
+    const lowerLat = parseFloat(latStr) - 0.25;
+    const upperLat = parseFloat(latStr) + 0.25;
     var latGT = { Lat: { $gte: lowerLat } };
     var latLT = { Lat: { $lte: upperLat } };
     newParams = newParams.replace(regexLat.replace(/_/g, ""), "");
@@ -49,7 +48,7 @@ exports.createAggregateQuery = reqParams => {
     const regexLng = exports.getLng(newParams);
     const lngStr = regexLng.split(":")[1];
     const lowerLng = parseFloat(lngStr) - 0.25;
-    const upperLng = parseFloat(lngStr) + 0.2;
+    const upperLng = parseFloat(lngStr) + 0.25;
     var lngGT = { Lng: { $gte: lowerLng } };
     var lngLT = { Lng: { $lte: upperLng } };
     newParams = newParams.replace(regexLng.replace(/_/g, ""), "");
@@ -65,10 +64,7 @@ exports.createAggregateQuery = reqParams => {
 
   const innerParams = innerConj
     ? exports.arrayToObj(
-        newParams
-          .split(`${innerConj}~`)[1]
-          .replace(")", "")
-          .split("_"),
+        newParams.split(`${innerConj}~`)[1].replace(")", "").split("_"),
         shouldRegEx
       )
     : "";
@@ -81,9 +77,9 @@ exports.createAggregateQuery = reqParams => {
         shouldRegEx
       )
     : exports.arrayToObj(newParams.split("~")[1].split("_"), shouldRegEx);
-  console.log(paramsArr);
+
   // need to fix empy values being added here
-  paramsArr.forEach(item => {
+  paramsArr.forEach((item) => {
     newObj = {};
     for (p in item) {
       if (p !== "") {
@@ -106,6 +102,7 @@ exports.createAggregateQuery = reqParams => {
   if (innerConj) {
     innerConj = `$${innerConj}`;
     innerParamsFinal[innerConj] = innerParams;
+    console.log(innerParamsFinal.toString());
     params.push(innerParamsFinal);
   }
 
@@ -124,8 +121,7 @@ exports.stringToObject = (str, shouldRegEx = true) => {
 };
 
 exports.arrayToObj = (arr, shouldRegEx = true) => {
-  console.log(shouldRegEx);
-  return arr.map(item => {
+  return arr.map((item) => {
     return exports.stringToObject(item, shouldRegEx);
   });
 };
@@ -141,13 +137,13 @@ exports.removeValue = (obj, val) => {
 };
 
 exports.filterArr = (arr, key, val) => {
-  const tmpArr = arr.filter(item => {
+  const tmpArr = arr.filter((item) => {
     return item[key].indexOf(val) > -1;
   });
   return tmpArr;
 };
 
-exports.getLat = str => {
+exports.getLat = (str) => {
   const index = str.indexOf("Lat");
   const latHalf = str.substr(index, str.length);
   const regex = latHalf.split("_")[0] || latHalf;
@@ -155,7 +151,7 @@ exports.getLat = str => {
   return regex;
 };
 
-exports.getLng = str => {
+exports.getLng = (str) => {
   const index = str.indexOf("Lng");
   const lngHalf = str.substr(index, str.length);
   const regex = lngHalf.split("_")[0] || lngHalf;
