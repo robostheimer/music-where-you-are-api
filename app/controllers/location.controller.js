@@ -6,7 +6,7 @@ exports.create = (req, res) => {
   // Validate request
   if (!req.body.content) {
     return res.status(400).send({
-      message: "artist content can not be empty",
+      message: "artist content can not be empty"
     });
   }
 
@@ -21,19 +21,19 @@ exports.create = (req, res) => {
     Region: req.body.Region,
     City: req.body.City,
     metroCode: req.body.metroCode,
-    timeZone: req.body.timeZone,
+    timeZone: req.body.timeZone
   });
 
   // Save location in the database
   location
     .save()
-    .then((data) => {
+    .then(data => {
       res.send(data);
     })
-    .catch((err) => {
+    .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while creating the location.",
+          err.message || "Some error occurred while creating the location."
       });
     });
 };
@@ -42,13 +42,12 @@ exports.create = (req, res) => {
 exports.findAll = (req, res) => {
   location
     .find()
-    .then((location) => {
+    .then(location => {
       res.send(location);
     })
-    .catch((err) => {
+    .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving location.",
+        message: err.message || "Some error occurred while retrieving location."
       });
     });
 };
@@ -60,22 +59,22 @@ exports.findOne = (req, res) => {
   query.collection(location.collection);
   query
     .where({ Sid: req.params.id })
-    .then((location) => {
+    .then(location => {
       if (!location) {
         return res.status(404).send({
-          message: "location not found with id " + req.params.artistId,
+          message: "location not found with id " + req.params.artistId
         });
       }
       res.send(location);
     })
-    .catch((err) => {
+    .catch(err => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "location not found with id " + req.params.artistId,
+          message: "location not found with id " + req.params.artistId
         });
       }
       return res.status(500).send({
-        message: "Error retrieving location with id " + req.params.artistId,
+        message: "Error retrieving location with id " + req.params.artistId
       });
     });
 };
@@ -86,22 +85,22 @@ exports.findName = (req, res) => {
   query.collection(location.collection);
   query
     .where({ Name: req.params.name })
-    .then((location) => {
+    .then(location => {
       if (!location) {
         return res.status(404).send({
-          message: "location not found with id " + req.params.artistId,
+          message: "location not found with id " + req.params.artistId
         });
       }
       res.send(location);
     })
-    .catch((err) => {
+    .catch(err => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "location not found with id " + req.params.artistId,
+          message: "location not found with id " + req.params.artistId
         });
       }
       return res.status(500).send({
-        message: "Error retrieving location with id " + req.params.artistId,
+        message: "Error retrieving location with id " + req.params.artistId
       });
     });
 };
@@ -114,22 +113,22 @@ exports.findMatch = (req, res) => {
   var regex = new RegExp(req.params.name, "i");
   query
     .where({ Name: regex })
-    .then((location) => {
+    .then(location => {
       if (!location) {
         return res.status(404).send({
-          message: "location not found with id " + req.params.artistId,
+          message: "location not found with id " + req.params.artistId
         });
       }
       res.send(location);
     })
-    .catch((err) => {
+    .catch(err => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "location not found with id " + req.params.artistId,
+          message: "location not found with id " + req.params.artistId
         });
       }
       return res.status(500).send({
-        message: "Error retrieving location with id " + req.params.artistId,
+        message: "Error retrieving location with id " + req.params.artistId
       });
     });
 };
@@ -142,25 +141,24 @@ exports.findMultipleParams = (req, res) => {
   location
     .aggregate([
       {
-        $match: aggregate,
+        $match: aggregate
       },
-
+      { $limit: limit },
       { $sort: { "location.popularity": -1 } },
-      { $skip: skip },
+      { $skip: skip }
     ])
-    .limit(limit)
-    .then((location) => {
+    .then(location => {
       console.log(location);
       if (!location) {
         return res.status(404).send({
-          message: "location not found with id " + req.params.params,
+          message: "location not found with id " + req.params.params
         });
       }
 
       //res.send(location);
       const str = req.params.params.split("~")[1] || req.params.params;
       const params = str.split("_");
-      const geolocationParams = params.filter((param) => {
+      const geolocationParams = params.filter(param => {
         return (
           param.indexOf(".") > -1 &&
           /Name/.test(param) &&
@@ -186,14 +184,14 @@ exports.findMultipleParams = (req, res) => {
 
       res.send(location);
     })
-    .catch((err) => {
+    .catch(err => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "location not found with id " + req.params.params,
+          message: "location not found with id " + req.params.params
         });
       }
       return res.status(500).send({
-        message: "Error retrieving location with id " + req.params.params,
+        message: "Error retrieving location with id " + req.params.params
       });
     });
 };
@@ -216,24 +214,24 @@ exports.findLatLng = (req, res) => {
       { Lat: { $gte: lowerLat } },
       { Lat: { $lte: upperLat } },
       { Lng: { $gte: lowerLng } },
-      { Lng: { $lte: upperLng } },
+      { Lng: { $lte: upperLng } }
     ])
-    .then((location) => {
+    .then(location => {
       if (!location) {
         return res.status(404).send({
-          message: "location not found with id " + req.params.params,
+          message: "location not found with id " + req.params.params
         });
       }
       res.send(location);
     })
-    .catch((err) => {
+    .catch(err => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "location not found with id " + req.params.params,
+          message: "location not found with id " + req.params.params
         });
       }
       return res.status(500).send({
-        message: "Error retrieving location with id " + req.params.params,
+        message: "Error retrieving location with id " + req.params.params
       });
     });
 };
@@ -243,7 +241,7 @@ exports.update = (req, res) => {
   // Validate Request
   if (!req.body.content) {
     return res.status(400).send({
-      message: "location content can not be empty",
+      message: "location content can not be empty"
     });
   }
 
@@ -253,26 +251,26 @@ exports.update = (req, res) => {
       req.params.artistId,
       {
         title: req.body.title || "Untitled location",
-        content: req.body.content,
+        content: req.body.content
       },
       { new: true }
     )
-    .then((location) => {
+    .then(location => {
       if (!location) {
         return res.status(404).send({
-          message: "location not found with id " + req.params.artistId,
+          message: "location not found with id " + req.params.artistId
         });
       }
       res.send(location);
     })
-    .catch((err) => {
+    .catch(err => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "location not found with id " + req.params.artistId,
+          message: "location not found with id " + req.params.artistId
         });
       }
       return res.status(500).send({
-        message: "Error updating location with id " + req.params.artistId,
+        message: "Error updating location with id " + req.params.artistId
       });
     });
 };
@@ -281,22 +279,22 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   location
     .findByIdAndRemove(req.params.artistId)
-    .then((location) => {
+    .then(location => {
       if (!location) {
         return res.status(404).send({
-          message: "location not found with id " + req.params.artistId,
+          message: "location not found with id " + req.params.artistId
         });
       }
       res.send({ message: "location deleted successfully!" });
     })
-    .catch((err) => {
+    .catch(err => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
         return res.status(404).send({
-          message: "location not found with id " + req.params.artistId,
+          message: "location not found with id " + req.params.artistId
         });
       }
       return res.status(500).send({
-        message: "Could not delete location with id " + req.params.artistId,
+        message: "Could not delete location with id " + req.params.artistId
       });
     });
 };

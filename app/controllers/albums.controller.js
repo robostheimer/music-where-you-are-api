@@ -6,7 +6,7 @@ exports.create = (req, res) => {
   // Validate request
   if (!req.body.content) {
     return res.status(400).send({
-      message: "albums content can not be empty",
+      message: "albums content can not be empty"
     });
   }
 
@@ -21,19 +21,18 @@ exports.create = (req, res) => {
     City: req.body.City,
     Lat: req.body.Lat,
     Lng: req.body.Lng,
-    spotify: req.body.spotify | {},
+    spotify: req.body.spotify | {}
   });
 
   // Save albums in the database
   albums
     .save()
-    .then((data) => {
+    .then(data => {
       res.send(data);
     })
-    .catch((err) => {
+    .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the albums.",
+        message: err.message || "Some error occurred while creating the albums."
       });
     });
 };
@@ -42,12 +41,12 @@ exports.create = (req, res) => {
 exports.findAll = (req, res) => {
   albums
     .find()
-    .then((albums) => {
+    .then(albums => {
       res.send(albums);
     })
-    .catch((err) => {
+    .catch(err => {
       res.status(500).send({
-        message: err.message || "Some error occurred while retrieving albums.",
+        message: err.message || "Some error occurred while retrieving albums."
       });
     });
 };
@@ -59,22 +58,22 @@ exports.findOne = (req, res) => {
   query.collection(albums.collection);
   query
     .where({ Sid: req.params.id })
-    .then((albums) => {
+    .then(albums => {
       if (!albums) {
         return res.status(404).send({
-          message: "albums not found with id " + req.params.id,
+          message: "albums not found with id " + req.params.id
         });
       }
       res.send(albums);
     })
-    .catch((err) => {
+    .catch(err => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "albums not found with id " + req.params.id,
+          message: "albums not found with id " + req.params.id
         });
       }
       return res.status(500).send({
-        message: "Error retrieving albums with id " + req.params.id,
+        message: "Error retrieving albums with id " + req.params.id
       });
     });
 };
@@ -87,22 +86,22 @@ exports.findName = (req, res) => {
   query.collection(albums.collection);
   query
     .where({ Name: req.params.name })
-    .then((albums) => {
+    .then(albums => {
       if (!albums) {
         return res.status(404).send({
-          message: "albums not found with name: " + req.params.name,
+          message: "albums not found with name: " + req.params.name
         });
       }
       res.send(albums);
     })
-    .catch((err) => {
+    .catch(err => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "albums not found with name: " + req.params.name,
+          message: "albums not found with name: " + req.params.name
         });
       }
       return res.status(500).send({
-        message: "Error retrieving albums with name: " + req.params.name,
+        message: "Error retrieving albums with name: " + req.params.name
       });
     });
 };
@@ -116,22 +115,22 @@ exports.findMatch = (req, res) => {
   var regex = new RegExp(req.params.name, "i");
   query
     .where({ Name: regex })
-    .then((albums) => {
+    .then(albums => {
       if (!albums) {
         return res.status(404).send({
-          message: "albums not found with id " + req.params.artistId,
+          message: "albums not found with id " + req.params.artistId
         });
       }
       res.send(albums);
     })
-    .catch((err) => {
+    .catch(err => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "albums not found with id " + req.params.artistId,
+          message: "albums not found with id " + req.params.artistId
         });
       }
       return res.status(500).send({
-        message: "Error retrieving albums with id " + req.params.artistId,
+        message: "Error retrieving albums with id " + req.params.artistId
       });
     });
 };
@@ -144,21 +143,20 @@ exports.findMultipleParams = (req, res) => {
   albums
     .aggregate([
       {
-        $match: aggregate,
+        $match: aggregate
       },
-
-      { $skip: skip },
+      { $limit: limit },
+      { $skip: skip }
     ])
-    .limit(limit)
-    .then((albums) => {
+    .then(albums => {
       if (!albums) {
         return res.status(404).send({
-          message: "albums not found with id " + req.params.params,
+          message: "albums not found with id " + req.params.params
         });
       }
       const str = req.params.params.split("~")[1] || req.params.params;
       const params = str.split("_");
-      const albumParams = params.filter((param) => {
+      const albumParams = params.filter(param => {
         return param.indexOf(".") > -1;
       });
 
@@ -174,14 +172,14 @@ exports.findMultipleParams = (req, res) => {
       albums[0].albums = albumsArr;
       res.send(albums[0]);
     })
-    .catch((err) => {
+    .catch(err => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "albums not found with id " + req.params.params,
+          message: "albums not found with id " + req.params.params
         });
       }
       return res.status(500).send({
-        message: "Error retrieving albums with id " + req.params.params,
+        message: "Error retrieving albums with id " + req.params.params
       });
     });
 };
@@ -203,24 +201,24 @@ exports.findLatLng = (req, res) => {
       { Lat: { $gte: lowerLat } },
       { Lat: { $lte: upperLat } },
       { Lng: { $gte: lowerLng } },
-      { Lng: { $lte: upperLng } },
+      { Lng: { $lte: upperLng } }
     ])
-    .then((albums) => {
+    .then(albums => {
       if (!albums) {
         return res.status(404).send({
-          message: "albums not found with id " + req.params.params,
+          message: "albums not found with id " + req.params.params
         });
       }
       res.send(albums);
     })
-    .catch((err) => {
+    .catch(err => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "albums not found with id " + req.params.params,
+          message: "albums not found with id " + req.params.params
         });
       }
       return res.status(500).send({
-        message: "Error retrieving albums with id " + req.params.params,
+        message: "Error retrieving albums with id " + req.params.params
       });
     });
 };
@@ -229,7 +227,7 @@ exports.update = (req, res) => {
   // Validate Request
   if (!req.body.content) {
     return res.status(400).send({
-      message: "albums content can not be empty",
+      message: "albums content can not be empty"
     });
   }
 
@@ -239,26 +237,26 @@ exports.update = (req, res) => {
       req.params.artistId,
       {
         title: req.body.title || "Untitled albums",
-        content: req.body.content,
+        content: req.body.content
       },
       { new: true }
     )
-    .then((albums) => {
+    .then(albums => {
       if (!albums) {
         return res.status(404).send({
-          message: "albums not found with id " + req.params.artistId,
+          message: "albums not found with id " + req.params.artistId
         });
       }
       res.send(albums);
     })
-    .catch((err) => {
+    .catch(err => {
       if (err.kind === "ObjectId") {
         return res.status(404).send({
-          message: "albums not found with id " + req.params.artistId,
+          message: "albums not found with id " + req.params.artistId
         });
       }
       return res.status(500).send({
-        message: "Error updating albums with id " + req.params.artistId,
+        message: "Error updating albums with id " + req.params.artistId
       });
     });
 };
@@ -267,22 +265,22 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   albums
     .findByIdAndRemove(req.params.artistId)
-    .then((albums) => {
+    .then(albums => {
       if (!albums) {
         return res.status(404).send({
-          message: "albums not found with id " + req.params.artistId,
+          message: "albums not found with id " + req.params.artistId
         });
       }
       res.send({ message: "albums deleted successfully!" });
     })
-    .catch((err) => {
+    .catch(err => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
         return res.status(404).send({
-          message: "albums not found with id " + req.params.artistId,
+          message: "albums not found with id " + req.params.artistId
         });
       }
       return res.status(500).send({
-        message: "Could not delete albums with id " + req.params.artistId,
+        message: "Could not delete albums with id " + req.params.artistId
       });
     });
 };
