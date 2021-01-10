@@ -1,5 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+var https = require("https");
+var PORT = process.env.PORT || 3000;
+var HOST = process.env.HOST || "";
+var fs = require("fs");
 
 // create express app
 const app = express();
@@ -19,10 +23,10 @@ mongoose.Promise = global.Promise;
 // Connecting to the database
 mongoose
   .connect(dbConfig.url)
-  .then(data => {
+  .then((data) => {
     console.log("Successfully connected to the database");
   })
-  .catch(err => {
+  .catch((err) => {
     console.log("Could not connect to the database. Exiting now...");
     process.exit();
   });
@@ -51,11 +55,24 @@ app.get("/*", (req, res, next) => {
 // define a simple route
 app.get("/*", (req, res) => {
   res.json({
-    message: "MusicWhereYouAre endpoints.  Is there music where you are?"
+    message: "MusicWhereYouAre endpoints.  Is there music where you are?",
   });
 });
 
 // listen for requests
-app.listen(3000, () => {
-  console.log("Server is listening on port 3000");
+// app.listen(3000, () => {
+//   console.log("Server is listening on port 3000");
+// });
+
+var options = {
+  key: fs.readFileSync("ssl/server.key"),
+  cert: fs.readFileSync("ssl/server.crt"),
+};
+
+https.createServer(options, app).listen(PORT, HOST, null, function () {
+  console.log(
+    "Server listening on port %d in %s mode",
+    this.address().port,
+    app.settings.env
+  );
 });
