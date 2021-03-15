@@ -176,10 +176,10 @@ exports.findMultipleParams = (req, res) => {
 exports.findLatLng = (req, res) => {
   const params = req.params.params;
   const latLngArr = params.split("_");
-  const lowerLat = parseFloat(latLngArr[0]) - 0.25;
-  const upperLat = parseFloat(latLngArr[0]) + 0.25;
-  const lowerLng = parseFloat(latLngArr[1]) - 0.25;
-  const upperLng = parseFloat(latLngArr[1]) + 0.25;
+  const lowerLat = parseFloat(latLngArr[0]) - 0.35;
+  const upperLat = parseFloat(latLngArr[0]) + 0.35;
+  const lowerLng = parseFloat(latLngArr[1]) - 0.35;
+  const upperLng = parseFloat(latLngArr[1]) + 0.35;
   const limit = parseInt(req.query.limit) || 100;
   const skip = parseInt(req.query.skip) || 0;
 
