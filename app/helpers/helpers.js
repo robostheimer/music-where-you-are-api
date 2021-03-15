@@ -37,8 +37,8 @@ exports.createAggregateQuery = (reqParams) => {
   if (newParams.indexOf("Lat") > -1) {
     const regexLat = exports.getLat(newParams);
     const latStr = regexLat.split(":")[1];
-    const lowerLat = parseFloat(latStr) - 0.225;
-    const upperLat = parseFloat(latStr) + 0.5;
+    const lowerLat = parseFloat(latStr) - 0.15;
+    const upperLat = parseFloat(latStr) + 0.15;
     var latGT = { Lat: { $gte: lowerLat } };
     var latLT = { Lat: { $lte: upperLat } };
     newParams = newParams.replace(regexLat.replace(/_/g, ""), "");
@@ -48,8 +48,8 @@ exports.createAggregateQuery = (reqParams) => {
   if (newParams.indexOf("Lng") > -1) {
     const regexLng = exports.getLng(newParams);
     const lngStr = regexLng.split(":")[1];
-    const lowerLng = parseFloat(lngStr) - 0.3;
-    const upperLng = parseFloat(lngStr) + 0.3;
+    const lowerLng = parseFloat(lngStr) - 0.15;
+    const upperLng = parseFloat(lngStr) + 0.15;
     var lngGT = { Lng: { $gte: lowerLng } };
     var lngLT = { Lng: { $lte: upperLng } };
     newParams = newParams.replace(regexLng.replace(/_/g, ""), "");

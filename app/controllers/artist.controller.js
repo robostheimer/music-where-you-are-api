@@ -176,11 +176,12 @@ exports.findMultipleParams = (req, res) => {
 exports.findLatLng = (req, res) => {
   const params = req.params.params;
   const latLngArr = params.split("_");
-  const lowerLat = parseFloat(latLngArr[0]) - 0.05;
-  const upperLat = parseFloat(latLngArr[0]) + 0.05;
-  const lowerLng = parseFloat(latLngArr[1]) - 0.05;
-  const upperLng = parseFloat(latLngArr[1]) + 0.05;
+  const lowerLat = parseFloat(latLngArr[0]) - 0.15;
+  const upperLat = parseFloat(latLngArr[0]) + 0.15;
+  const lowerLng = parseFloat(latLngArr[1]) - 0.15;
+  const upperLng = parseFloat(latLngArr[1]) + 0.15;
   const limit = parseInt(req.query.limit) || 100;
+  const skip = parseInt(req.query.skip) || 0;
 
   const query = artist.find(); // `query` is an instance of `Query`
   query.setOptions({ lean: true });
@@ -194,7 +195,7 @@ exports.findLatLng = (req, res) => {
     ]).sort(
     { 
         "spotify.popularity" : -1.0
-    }).limit(limit)
+    }).limit(limit).skip(skip)
     .then((artist) => {
       if (!artist) {
         return res.status(404).send({
