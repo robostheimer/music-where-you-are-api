@@ -37,5 +37,5 @@ module.exports = app => {
   app.get("/albumsMultiple/:params", albums.findMultipleParams);
 
   // Retrieve all records that matches all parameters
-  app.get("/artistsLatLng/:params", albums.findLatLng);
+  app.get("/albumsLatLng/:params", albums.findLatLng);
 };

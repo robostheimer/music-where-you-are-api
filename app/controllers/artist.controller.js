@@ -54,7 +54,6 @@ exports.findAll = (req, res) => {
 
 // Find a single artist by Name
 exports.findOne = (req, res) => {
-  console.log(req.params.id);
   const query = artist.find(); // `query` is an instance of `Query`
   query.setOptions({ lean: true });
   query.collection(artist.collection);
@@ -176,10 +175,10 @@ exports.findMultipleParams = (req, res) => {
 exports.findLatLng = (req, res) => {
   const params = req.params.params;
   const latLngArr = params.split("_");
-  const lowerLat = parseFloat(latLngArr[0]) - 0.5;
-  const upperLat = parseFloat(latLngArr[0]) + 0.5;
-  const lowerLng = parseFloat(latLngArr[1]) - 0.5;
-  const upperLng = parseFloat(latLngArr[1]) + 0.5;
+  const lowerLat = parseFloat(latLngArr[0]) - 0.3;
+  const upperLat = parseFloat(latLngArr[0]) + 0.3;
+  const lowerLng = parseFloat(latLngArr[1]) - 0.3;
+  const upperLng = parseFloat(latLngArr[1]) + 0.3;
   const limit = parseInt(req.query.limit) || 100;
   const skip = parseInt(req.query.skip) || 0;
 

@@ -15,6 +15,10 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
-    "mongoose": "^5.1.7"
+    "mongoose": "^5.1.7",
+    "puppeteer": "^10.4.0",
+    "puppeteer-extra": "^3.3.4",
+    "puppeteer-extra-plugin-stealth": "^2.11.1",
+    "unirest": "^0.6.0"
   }
 }

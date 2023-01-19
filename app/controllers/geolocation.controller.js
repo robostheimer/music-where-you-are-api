@@ -197,10 +197,10 @@ exports.findMultipleParams = (req, res) => {
 exports.findLatLng = (req, res) => {
   const params = req.params.params;
   const latLngArr = params.split("_");
-  const lowerLat = parseFloat(latLngArr[0]) - 0.05;
-  const upperLat = parseFloat(latLngArr[0]) + 0.05;
-  const lowerLng = parseFloat(latLngArr[1]) - 0.05;
-  const upperLng = parseFloat(latLngArr[1]) + 0.05;
+  const lowerLat = parseFloat(latLngArr[0]) - 0.01;
+  const upperLat = parseFloat(latLngArr[0]) + 0.01;
+  const lowerLng = parseFloat(latLngArr[1]) - 0.01;
+  const upperLng = parseFloat(latLngArr[1]) + 0.01;
 
   const query = geolocation.find(); // `query` is an instance of `Query`
   query.setOptions({ lean: true });
