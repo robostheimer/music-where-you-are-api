@@ -15,7 +15,7 @@ exports.create = (req, res) => {
     CountryID: req.body.CountryID,
     Country: req.body.Country,
     Region: req.body.Region,
-    CityName: req.body.City,
+    City : req.body.City,
     Lat: req.body.Lat,
     Long: req.body.Long
   });
