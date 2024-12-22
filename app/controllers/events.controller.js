@@ -49,27 +49,6 @@ exports.findAll = async (req, res) => {
   puppeteer.use(StealthPlugin())
     const city = req.params.city;
     const numOfEvents = req.query.num_of_events;
-    // let ip_addresses = [];
-    // let port_numbers = [];
-    // let random_number = Math.floor(Math.random() * 100);
-    // request("https://sslproxies.org/",  async function(error, response, html) {
-    //   if (!error && response.statusCode == 200) {
-    //     const $ = cheerio.load(html);
-
-    //     $("td:nth-child(1)").each(function(index, value) {
-    //       ip_addresses[index] = $(this).text();
-    //     });
-
-    //     $("td:nth-child(2)").each(function(index, value) {
-    //       port_numbers[index] = $(this).text();
-    //     });
-    //   } else {
-    //     console.log("Error loading proxy, please try again");
-    //   }
-
-
-
-    //   const proxy = { address: ip_addresses[random_number],  port: port_numbers[random_number]};
         const url = `http://www.google.com/search?q=concerts ${city}&ibp=htl;events&uule&hl=en#htivrt=events&fpstate=tldetail&htichips=date:month&htischips=&htidocid=L2F1dGhvcml0eS9ob3Jpem9uL2NsdXN0ZXJlZF9ldmVudC8yMDIzLTAxLTE0fDE0MzkwNTIwMDY5NjA3ODU0OTMz`
         browser = await puppeteer.launch({
           headless: false,
@@ -141,17 +120,17 @@ const extractItems = async (page) => {
         address: Array.from(el.querySelectorAll(".zvDXNd")).map((el) => {
           return el.textContent ? el.textContent : undefined;
         }),
-        link: el.querySelector(".zTH3xc") ? el.querySelector(".zTH3xc").getAttribute("href") : undefined,
-        // thumbnail: el.querySelector('.wA1Bge').getAttribute("src"),
-        location_link: el.querySelector(".ozQmAd") ? "https://www.google.com" + el.querySelector(".ozQmAd").getAttribute("data-url") : "",
-        tickets: JSON.stringify(Array.from(el.querySelectorAll('.mi3HuEAU05x__visible-container div')).map((el) => {
-          return {
-            source: el.getAttribute("data-domain") ? el.getAttribute("data-domain") : undefined,
-            link: el.querySelector(".SKIyM") && el.querySelector(".SKIyM").getAttribute("href") ? el.querySelector(".SKIyM").getAttribute("href") : undefined,
-          }
-        })),
-        venue_name: el.querySelector(".RVclrc") && el.querySelector(".RVclrc").textContent ? el.querySelector(".RVclrc").textContent : undefined,
-        venue_link: el.querySelector(".pzNwRe a") ? "" + el.querySelector(".pzNwRe a").getAttribute("href") : ""
+        // // link: el.querySelector(".zTH3xc") ? el.querySelector(".zTH3xc").getAttribute("href") : undefined,
+        // // // thumbnail: el.querySelector('.wA1Bge').getAttribute("src"),
+        // // location_link: el.querySelector(".ozQmAd") ? "https://www.google.com" + el.querySelector(".ozQmAd").getAttribute("data-url") : "",
+        // // tickets: JSON.stringify(Array.from(el.querySelectorAll('.mi3HuEAU05x__visible-container div')).map((el) => {
+        // //   return {
+        // //     source: el.getAttribute("data-domain") ? el.getAttribute("data-domain") : undefined,
+        // //     link: el.querySelector(".SKIyM") && el.querySelector(".SKIyM").getAttribute("href") ? el.querySelector(".SKIyM").getAttribute("href") : undefined,
+        // //   }
+        // // })),
+        //venue_name: el.querySelector(".RVclrc") && el.querySelector(".RVclrc").textContent ? el.querySelector(".RVclrc").textContent : undefined,
+        // venue_link: el.querySelector(".pzNwRe a") ? "" + el.querySelector(".pzNwRe a").getAttribute("href") : ""
       }
     })
   })

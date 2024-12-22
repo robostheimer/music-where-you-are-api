@@ -141,7 +141,6 @@ exports.findMultipleParams = (req, res) => {
         $match: aggregate
       },
       { $limit: limit },
-      { $sort: { "geolocation.popularity": -1 } },
       { $skip: skip }
     ])
     .then(geolocation => {
@@ -197,28 +196,33 @@ exports.findMultipleParams = (req, res) => {
 exports.findLatLng = (req, res) => {
   const params = req.params.params;
   const latLngArr = params.split("_");
-  const lowerLat = parseFloat(latLngArr[0]) - 0.01;
-  const upperLat = parseFloat(latLngArr[0]) + 0.01;
-  const lowerLng = parseFloat(latLngArr[1]) - 0.01;
-  const upperLng = parseFloat(latLngArr[1]) + 0.01;
+  const lowerLat = parseFloat(latLngArr[0]) - 0.3;
+  const upperLat = parseFloat(latLngArr[0]) + 0.3;
+  const lowerLng = parseFloat(latLngArr[1]) - 0.3;
+  const upperLng = parseFloat(latLngArr[1]) + 0.3;
+  const limit = parseInt(req.query.limit) || 100;
+  const skip = parseInt(req.query.skip) || 0;
+  console.log(lowerLat, upperLat, lowerLng, upperLng)
 
   const query = geolocation.find(); // `query` is an instance of `Query`
-  query.setOptions({ lean: true });
+  // query.setOptions({ lean: true });
   query.collection(geolocation.collection);
 
   query
-    .and([
+     .and([
       { Lat: { $gte: lowerLat } },
       { Lat: { $lte: upperLat } },
-      { Lng: { $gte: lowerLng } },
-      { Lng: { $lte: upperLng } }
-    ])
+      { Long: { $gte: lowerLng } },
+      { Long: { $lte: upperLng } },
+    ]).limit(limit).skip(skip)
     .then(geolocation => {
+      console.log(geolocation)
       if (!geolocation) {
         return res.status(404).send({
           message: "geolocation not found with id " + req.params.params
         });
       }
+      
       res.send(geolocation);
     })
     .catch(err => {
