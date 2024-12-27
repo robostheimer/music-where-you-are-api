@@ -54,7 +54,6 @@ exports.findAll = async (req, res) => {
           headless: false,
           args: ["--disabled-setuid-sandbox", "--no-sandbox"]//, `--proxy-server=${proxy.address}:${proxy.port}`],
         });
-        console.log(browser.args)
         const [page] = await browser.pages();
         
         const selectRandom = () => {
@@ -80,7 +79,8 @@ exports.findAll = async (req, res) => {
             waitUntil: 'domcontentloaded',
         })
 
-      await page.waitForTimeout(500)  
+      await page.waitForTimeout(1500);
+      console.log('page', page)
       let data =  await scrollPage(page,".UbEfxe",numOfEvents || 20)
       res.send(JSON.stringify(data));
       await browser.close();
@@ -105,7 +105,7 @@ const scrollPage = async (page, scrollContainer, itemTargetCount) => {
 
 
 const extractItems = async (page) => {
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(1500);
   
   let events_results = await page.evaluate(() => {
   
