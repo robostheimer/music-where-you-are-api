@@ -1,4 +1,3 @@
-const albums = require("../models/albums.model.js");
 const { createAggregateQuery, filterArr } = require("../helpers/helpers");
 var express = require("express");
 // puppeteer-extra is a drop-in replacement for puppeteer,
@@ -6,55 +5,19 @@ var express = require("express");
 const puppeteer = require('puppeteer-extra');
 
 // add stealth plugin and use defaults (all evasion techniques)
-const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-
-
-
-var fs = require("fs");
-var request = require("request");
-var cheerio = require("cheerio");
-var app = express();
-var output = "";
-var results = [];
-var x = 0;
-var arr = [];
-
-
-// Create and Save a new albums
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.content) {
-    return res.status(400).send({
-      message: "albums content can not be empty"
-    });
-  }
-
-  // Create a albums
-  const albums = new albums({
-    title: req.body.title || "Untitled albums",
-    content: req.body.content,
-    ArtistId: req.body.ArtistId,
-    Hotness: req.body.Hotness,
-    Name: req.body.Name,
-    Sid: req.body.Sid,
-    City: req.body.City,
-    Lat: req.body.Lat,
-    Lng: req.body.Lng,
-    spotify: req.body.spotify | {}
-  });
-}
-
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 // Retrieve and return all albums from the database.
 exports.findAll = async (req, res) => {
   puppeteer.use(StealthPlugin())
     const city = req.params.city;
     const numOfEvents = req.query.num_of_events;
         const url = `http://www.google.com/search?q=concerts ${city}&ibp=htl;events&uule&hl=en#htivrt=events&fpstate=tldetail&htichips=date:month&htischips=&htidocid=L2F1dGhvcml0eS9ob3Jpem9uL2NsdXN0ZXJlZF9ldmVudC8yMDIzLTAxLTE0fDE0MzkwNTIwMDY5NjA3ODU0OTMz`
-        browser = await puppeteer.launch({
+         browser = await puppeteer.launch({
           headless: false,
-          args: ["--disabled-setuid-sandbox", "--no-sandbox"]//, `--proxy-server=${proxy.address}:${proxy.port}`],
+          args: ["--no-sandbox","--disabled-setuid-sandbox"]//, `--proxy-server=${proxy.address}:${proxy.port}`],
         });
-        const [page] = await browser.pages();
+
+     const [page] = await browser.pages();
         
         const selectRandom = () => {
         const userAgents =  [
@@ -79,8 +42,7 @@ exports.findAll = async (req, res) => {
             waitUntil: 'domcontentloaded',
         })
 
-      await page.waitForTimeout(1500);
-      console.log('page', page)
+      await page.waitForTimeout(1500)  
       let data =  await scrollPage(page,".UbEfxe",numOfEvents || 20)
       res.send(JSON.stringify(data));
       await browser.close();
@@ -103,7 +65,6 @@ const scrollPage = async (page, scrollContainer, itemTargetCount) => {
   return items;
 }
 
-
 const extractItems = async (page) => {
   await page.waitForTimeout(1500);
   
@@ -120,17 +81,6 @@ const extractItems = async (page) => {
         address: Array.from(el.querySelectorAll(".zvDXNd")).map((el) => {
           return el.textContent ? el.textContent : undefined;
         }),
-        // // link: el.querySelector(".zTH3xc") ? el.querySelector(".zTH3xc").getAttribute("href") : undefined,
-        // // // thumbnail: el.querySelector('.wA1Bge').getAttribute("src"),
-        // // location_link: el.querySelector(".ozQmAd") ? "https://www.google.com" + el.querySelector(".ozQmAd").getAttribute("data-url") : "",
-        // // tickets: JSON.stringify(Array.from(el.querySelectorAll('.mi3HuEAU05x__visible-container div')).map((el) => {
-        // //   return {
-        // //     source: el.getAttribute("data-domain") ? el.getAttribute("data-domain") : undefined,
-        // //     link: el.querySelector(".SKIyM") && el.querySelector(".SKIyM").getAttribute("href") ? el.querySelector(".SKIyM").getAttribute("href") : undefined,
-        // //   }
-        // // })),
-        //venue_name: el.querySelector(".RVclrc") && el.querySelector(".RVclrc").textContent ? el.querySelector(".RVclrc").textContent : undefined,
-        // venue_link: el.querySelector(".pzNwRe a") ? "" + el.querySelector(".pzNwRe a").getAttribute("href") : ""
       }
     })
   })
