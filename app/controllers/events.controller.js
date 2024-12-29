@@ -57,8 +57,12 @@ const scrollPage = async (page, scrollContainer, itemTargetCount) => {
   let items = [];
   let previousHeight = await page.evaluate(`document.querySelector("${scrollContainer}").scrollHeight`);
   let tracker = 0
+  console.log(itemTargetCount, items.length)
   while (itemTargetCount > items.length && tracker <= items.length) {
     const moreItems = await extractItems(page);
+    if(moreItems.length + 5 === tracker) {
+      break;
+    }
     items = items.concat(moreItems)
     if(items[0] && items[0] === 'undefined') {
       break;
@@ -71,7 +75,7 @@ const scrollPage = async (page, scrollContainer, itemTargetCount) => {
 }
 
 const extractItems = async (page) => {
-  await page.waitForTimeout(1500);
+  await page.waitForTimeout(1000);
   
   let events_results = await page.evaluate(() => {
   
