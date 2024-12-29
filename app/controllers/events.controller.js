@@ -19,34 +19,38 @@ exports.findAll = async (req, res) => {
 
      const [page] = await browser.pages();
         
-        const selectRandom = () => {
-        const userAgents =  [
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36", 
-          "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36", 
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36",
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36",
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36",
-        ];
-        var randomNumber = Math.floor(Math.random() * userAgents.length);     return userAgents[randomNumber];     
-        }     
-        let user_agent = selectRandom(); 
-        page.setExtraHTTPHeaders({
-          'user-agent': user_agent,
-          'upgrade-insecure-requests': '1',
-          'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
-          'accept-encoding': 'gzip, deflate, br',
-          'accept-language': 'en-US,en;q=0.9,en;q=0.8'
-      })
-        await page.goto(url , {
-            waitUntil: 'domcontentloaded',
-        })
+    const selectRandom = () => {
+    const userAgents =  [
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36", 
+      "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36", 
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36",
+    ];
+    var randomNumber = Math.floor(Math.random() * userAgents.length);     return userAgents[randomNumber];     
+    }     
+    let user_agent = selectRandom(); 
+    page.setExtraHTTPHeaders({
+      'user-agent': user_agent,
+      'upgrade-insecure-requests': '1',
+      'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+      'accept-encoding': 'gzip, deflate, br',
+      'accept-language': 'en-US,en;q=0.9,en;q=0.8'
+  })
+    await page.goto(url , {
+        waitUntil: 'domcontentloaded',
+    })
 
-      await page.waitForTimeout(1500)  
-      let data =  await scrollPage(page,".UbEfxe",numOfEvents || 20)
-      res.send(JSON.stringify(data));
-      await browser.close();
-    // });
+  await page.waitForTimeout(1500)  
+  try {
+  let data =  await scrollPage(page,".UbEfxe",numOfEvents || 20)
+  res.send(JSON.stringify(data));
+  } catch {
+    res.send(JSON.stringify([]))
+  } finally {
+    await browser.close();
+  }
 }
 
 const scrollPage = async (page, scrollContainer, itemTargetCount) => {
@@ -54,7 +58,8 @@ const scrollPage = async (page, scrollContainer, itemTargetCount) => {
   let previousHeight = await page.evaluate(`document.querySelector("${scrollContainer}").scrollHeight`);
   let tracker = 0
   while (itemTargetCount > items.length && tracker <= items.length) {
-    items = await extractItems(page);
+    const moreItems = await extractItems(page);
+    items = items.concat(moreItems)
     if(items[0] && items[0] === 'undefined') {
       break;
     }
