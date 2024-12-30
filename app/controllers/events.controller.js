@@ -11,7 +11,7 @@ exports.findAll = async (req, res) => {
   puppeteer.use(StealthPlugin())
     const city = req.params.city;
     const numOfEvents = req.query.num_of_events;
-        const url = `http://www.google.com/search?q=concerts ${city}&ibp=htl;events&uule&hl=en#htivrt=events&fpstate=tldetail&htichips=date:month&htischips=&htidocid=L2F1dGhvcml0eS9ob3Jpem9uL2NsdXN0ZXJlZF9ldmVudC8yMDIzLTAxLTE0fDE0MzkwNTIwMDY5NjA3ODU0OTMz`
+        const url = `http://www.google.com/search?q=concerts ${city}&ibp=htl;events&uule&hl=en#htivrt=events&fpstate=tldetail&htichips=date:week&htischips=&htidocid=L2F1dGhvcml0eS9ob3Jpem9uL2NsdXN0ZXJlZF9ldmVudC8yMDIzLTAxLTE0fDE0MzkwNTIwMDY5NjA3ODU0OTMz`
          browser = await puppeteer.launch({
           headless: false,
           args: ["--no-sandbox","--disabled-setuid-sandbox"]//, `--proxy-server=${proxy.address}:${proxy.port}`],
