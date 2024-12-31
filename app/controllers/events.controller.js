@@ -1,5 +1,3 @@
-const { createAggregateQuery, filterArr } = require("../helpers/helpers");
-var express = require("express");
 // puppeteer-extra is a drop-in replacement for puppeteer,
 // it augments the installed puppeteer with plugin functionality
 const puppeteer = require('puppeteer-extra');
@@ -11,7 +9,7 @@ exports.findAll = async (req, res) => {
   puppeteer.use(StealthPlugin())
     const city = req.params.city;
     const numOfEvents = req.query.num_of_events;
-        const url = `http://www.google.com/search?q=concerts ${city}&ibp=htl;events&uule&hl=en#htivrt=events&fpstate=tldetail&htichips=date:week&htischips=&htidocid=L2F1dGhvcml0eS9ob3Jpem9uL2NsdXN0ZXJlZF9ldmVudC8yMDIzLTAxLTE0fDE0MzkwNTIwMDY5NjA3ODU0OTMz`
+        const url = `http://www.google.com/search?q=concerts ${city}&ibp=htl;events&uule&hl=en#htivrt=events&fpstate=tldetail&htichips=date:week&htischips=&event_type=concert&htidocid=L2F1dGhvcml0eS9ob3Jpem9uL2NsdXN0ZXJlZF9ldmVudC8yMDIzLTAxLTE0fDE0MzkwNTIwMDY5NjA3ODU0OTMz`
          browser = await puppeteer.launch({
           headless: false,
           args: ["--no-sandbox","--disabled-setuid-sandbox"]//, `--proxy-server=${proxy.address}:${proxy.port}`],
@@ -79,9 +77,9 @@ const extractItems = async (page) => {
   
   let events_results = await page.evaluate(() => {
   
-  if(!document.querySelector("li.PaEvOc")){
-   return ['undefined'];
-  } 
+    if(!document.querySelector("li.PaEvOc")){
+    return ['undefined'];
+    } 
     return Array.from(document.querySelectorAll("li.PaEvOc")).map((el) => {
       return {
         title: el.querySelector(".YOGjf") && el.querySelector(".YOGjf").textContent ? el.querySelector(".YOGjf").textContent : undefined,
