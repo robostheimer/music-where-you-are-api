@@ -7,7 +7,7 @@ const GeolocationSchema = mongoose.Schema(
     Region: String,
     City: String,
     Lat: String,
-    Long: String
+    Lng: String
   },
   {
     timestamps: true
