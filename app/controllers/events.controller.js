@@ -103,7 +103,7 @@ exports.findAll = async (req, res) => {
     await page.goto(url, { waitUntil: 'networkidle2' })
     let data =  await extractItems(page, pagination)
     res.send(JSON.stringify(data));
-  } catch {
+  } catch(e) {
     res.send(JSON.stringify(e))
   } finally {
     await browser.close();
@@ -111,7 +111,7 @@ exports.findAll = async (req, res) => {
 }
 
 const extractItems = async (page, pagination, retries = 3) => {
-  await page.waitForSelector('li.small-city', {timeout: 1500});
+  await page.waitForSelector('li.small-city', {timeout: 3000});
   let href = await page.evaluate(() => {
     if(!document.querySelector("li.small-city")){
       return ['undefined'];
@@ -128,7 +128,7 @@ const extractItems = async (page, pagination, retries = 3) => {
   const h = `https://www.songkick.com${href}${queryParams}`;
   
   await page.goto(`${h}&page=${pagination}#metro-area-calendar`);
-  await page.waitForSelector('.microformat', {timeout: 1500});
+  await page.waitForSelector('.microformat', {timeout: 3000});
   let events = await page.evaluate(() => {
     if(!document.querySelector(".microformat")){
       return ['undefined'];
