@@ -111,7 +111,7 @@ exports.findAll = async (req, res) => {
 }
 
 const extractItems = async (page, pagination, retries = 3) => {
-  await page.waitForSelector('li.small-city');
+  await page.waitForSelector('li.small-city', {timeout: 500});
   let href = await page.evaluate(() => {
     if(!document.querySelector("li.small-city")){
       return ['undefined'];
@@ -128,7 +128,7 @@ const extractItems = async (page, pagination, retries = 3) => {
   const h = `https://www.songkick.com${href}${queryParams}`;
   
   await page.goto(`${h}&page=${pagination}#metro-area-calendar`);
-  await page.waitForSelector('.microformat');
+  await page.waitForSelector('.microformat', {timeout: 500});
   let events = await page.evaluate(() => {
     if(!document.querySelector(".microformat")){
       return ['undefined'];
