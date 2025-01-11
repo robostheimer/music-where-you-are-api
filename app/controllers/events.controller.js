@@ -104,8 +104,7 @@ exports.findAll = async (req, res) => {
     let data =  await extractItems(page, pagination)
     res.send(JSON.stringify(data));
   } catch(e) {
-    res.status(err.status || 500);
-    res.json({ message: err.message, error: err });
+    res.send(JSON.stringify(e))
   } finally {
     await browser.close();
   }
