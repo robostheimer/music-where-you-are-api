@@ -104,14 +104,15 @@ exports.findAll = async (req, res) => {
     let data =  await extractItems(page, pagination)
     res.send(JSON.stringify(data));
   } catch(e) {
-    res.send(JSON.stringify(e))
+    res.send(JSON.stringify(e));
+    browser.close();
   } finally {
     await browser.close();
   }
 }
 
 const extractItems = async (page, pagination, retries = 3) => {
-  await page.waitForSelector('li.small-city', {timeout: 5000});
+  await page.waitForSelector('li.small-city', {timeout: 2000  });
   let href = await page.evaluate(() => {
     if(!document.querySelector("li.small-city")){
       return ['undefined'];
@@ -126,16 +127,19 @@ const extractItems = async (page, pagination, retries = 3) => {
   const maxDate = formatDate(twoWeeksFromToday);
   const queryParams = "?utf8=%E2%9C%93&filters[minDate]=" + encodeURIComponent(minDate) + "&filters[maxDate]=" + encodeURIComponent(maxDate);
   const h = `https://www.songkick.com${href}${queryParams}`;
-  
-  await page.goto(`${h}&page=${pagination}#metro-area-calendar`, { waitUntil: 'networkidle2' });
-  await page.waitForSelector('.microformat', {timeout: 5000});
-  let events = await page.evaluate(() => {
-    if(!document.querySelector(".microformat")){
-      return ['undefined'];
-    } 
-    return Array.from(document.querySelectorAll('.microformat')).map(mf => JSON.parse(mf.textContent));
-  })
+  try {
+    await page.goto(`${h}&page=${pagination}#metro-area-calendar`, { waitUntil: 'networkidle2' });
+    await page.waitForSelector('.microformat', {timeout: 2000 });
+    let events = await page.evaluate(() => {
+      if(!document.querySelector(".microformat")){
+        return ['undefined'];
+      } 
+      return Array.from(document.querySelectorAll('.microformat')).map(mf => JSON.parse(mf.textContent));
+    })
   return flat(events);
+  } catch {
+    browser.close();
+  }
 }
 
 function convertStateName(inputString) { 
