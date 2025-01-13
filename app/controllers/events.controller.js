@@ -73,7 +73,7 @@ exports.findAll = async (req, res) => {
   const pagination = req.query.page || 1;
   const url = `https://www.songkick.com/en/search?query=${city}&type=events&type=cities`
     browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     args: ["--no-sandbox","--disabled-setuid-sandbox"]//, `--proxy-server=${proxy.address}:${proxy.port}`],
   });
 
@@ -112,7 +112,7 @@ exports.findAll = async (req, res) => {
 }
 
 const extractItems = async (page, pagination, retries = 3) => {
-  await page.waitForSelector('li.small-city', {timeout: 4000  });
+  await page.waitForSelector('li.small-city', {timeout: 1500  });
   let href = await page.evaluate(() => {
     if(!document.querySelector("li.small-city")){
       return ['undefined'];
@@ -129,7 +129,7 @@ const extractItems = async (page, pagination, retries = 3) => {
   const h = `https://www.songkick.com${href}${queryParams}`;
   try {
     await page.goto(`${h}&page=${pagination}#metro-area-calendar`, { waitUntil: 'networkidle2' });
-    await page.waitForSelector('.microformat', {timeout: 4000 });
+    await page.waitForSelector('.microformat', {timeout: 1500 });
     let events = await page.evaluate(() => {
       if(!document.querySelector(".microformat")){
         return ['undefined'];
