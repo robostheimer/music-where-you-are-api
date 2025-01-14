@@ -73,7 +73,7 @@ exports.findAll = async (req, res) => {
   const pagination = req.query.page || 1;
   const url = `https://www.songkick.com/en/search?query=${city}&type=events&type=cities`
     browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     args: ["--no-sandbox","--disabled-setuid-sandbox"]//, `--proxy-server=${proxy.address}:${proxy.port}`],
   });
 
